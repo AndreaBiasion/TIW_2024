@@ -1,0 +1,64 @@
+/* Style the container */
+.container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 50px 100px;
+    width: 600px;
+}
+
+/* Style the headings */
+h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #011936;
+}
+
+/* Style the form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+}
+
+/* Style the form labels */
+label {
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #414552;
+}
+
+/* Style the form inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 13px;
+    margin-bottom: 15px;
+    border: 1px solid #d5dbe1;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+
+/* Style the submit button */
+button[type="submit"] {
+    margin-top: 10px;
+    padding: 13px 0;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Add hover effect to the submit button */
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
