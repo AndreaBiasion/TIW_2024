@@ -22,15 +22,5 @@ public class UserDAO {
 
     }
 
-    public void createGroup(Group group) {
 
-    }
-
-    public List<Group> findGroups() {
-        return null;
-    }
-
-    public void acceptInvite() {
-
-    }
 }
