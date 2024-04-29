@@ -1,6 +1,7 @@
 package com.example.tiw_2024.dao;
 
 import com.example.tiw_2024.beans.Group;
+import com.example.tiw_2024.beans.User;
 
 import java.sql.Connection;
 import java.util.List;
@@ -11,6 +12,11 @@ public class GroupDAO {
 
     public GroupDAO(Connection connection) {
         this.connection = connection;
+    }
+
+    // creates the group
+    public void createGroup(List<User> partecipants) {
+
     }
 
     // returns the groups associated with a user.id

@@ -42,6 +42,7 @@ input[type="password"] {
     margin-bottom: 15px;
     border: 1px solid #d5dbe1;
     border-radius: 5px;
+    font-weight: 600;
     transition: border-color 0.3s;
 }
 
