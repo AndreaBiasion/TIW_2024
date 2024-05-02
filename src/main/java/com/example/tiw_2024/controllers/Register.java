@@ -1,5 +1,6 @@
 package com.example.tiw_2024.controllers;
 
+import com.example.tiw_2024.dao.UserDAO;
 import com.example.tiw_2024.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -8,6 +9,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import java.sql.SQLException;
  * This servlet class handles the registration process.
  * It provides methods for handling HTTP GET and POST requests related to registration.
  */
+@WebServlet("/Register")
 public class Register extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -73,6 +76,44 @@ public class Register extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Implementation for handling registration POST requests goes here
+        String name = req.getParameter("name");
+        String surname = req.getParameter("surname");
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
+        String repeatPassword = req.getParameter("repeatPassword");
+
+        // check if password are matching
+        if (!password.equals(repeatPassword)) {
+            resp.sendError(400, "Passwords do not match");
+        }
+
+        String path;
+        if(name == null || surname == null || email == null){
+            // invalid fields
+            ServletContext servletContext = getServletContext();
+            final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
+            webContext.setVariable("nameReceived", (name != null ? name : ""));
+            webContext.setVariable("surnameReceived", ( surname != null ? surname : ""));
+            webContext.setVariable("emailReceived", (email != null ? email : ""));
+            webContext.setVariable("passwordReceived", password);
+            webContext.setVariable("repeatPassword", (repeatPassword != null ? repeatPassword : ""));
+            webContext.setVariable("errorMessageReceived", "Some fields are missing");
+            path = "/WEB-INF/register.html";
+            templateEngine.process(path, webContext, resp.getWriter());
+        } else {
+
+            // create new user
+            UserDAO userDAO = new UserDAO(connection);
+
+            try {
+                userDAO.addUser(name, surname, email, password);
+            } catch (SQLException e) {
+                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database can't be reached");
+            }
+
+            path = getServletContext().getContextPath() + "/login.html";
+            resp.sendRedirect(path);
+        }
     }
 
     /**
