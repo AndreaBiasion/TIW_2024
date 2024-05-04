@@ -1,4 +1,4 @@
-package com.example.tiw_2024.utils;
+package it.polimi.tiw.utils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.UnavailableException;

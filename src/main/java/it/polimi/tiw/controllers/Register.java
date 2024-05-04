@@ -1,7 +1,7 @@
-package com.example.tiw_2024.controllers;
+package it.polimi.tiw.controllers;
 
-import com.example.tiw_2024.dao.UserDAO;
-import com.example.tiw_2024.utils.ConnectionManager;
+import it.polimi.tiw.dao.UserDAO;
+import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -21,7 +21,7 @@ import java.sql.SQLException;
  * This servlet class handles the registration process.
  * It provides methods for handling HTTP GET and POST requests related to registration.
  */
-@WebServlet("/Register")
+@WebServlet(name = "/Register", value = "/Register")
 public class Register extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
@@ -51,22 +51,6 @@ public class Register extends HttpServlet {
     }
 
     /**
-     * Handles HTTP GET requests for registration page.
-     * @param req  the HttpServletRequest object containing the request parameters.
-     * @param resp the HttpServletResponse object for sending the response.
-     * @throws ServletException if an error occurs while processing the request.
-     * @throws IOException      if an I/O error occurs while handling the request.
-     */
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String path = "/WEB-INF/register.html";
-        resp.setContentType("text/html");
-        ServletContext servletContext = getServletContext();
-        final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
-        templateEngine.process(path, webContext, resp.getWriter());
-    }
-
-    /**
      * Handles HTTP POST requests for registration.
      * @param req  the HttpServletRequest object containing the request parameters.
      * @param resp the HttpServletResponse object for sending the response.
@@ -82,23 +66,23 @@ public class Register extends HttpServlet {
         String password = req.getParameter("password");
         String repeatPassword = req.getParameter("repeatPassword");
 
+        ServletContext servletContext = getServletContext();
+        final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
+
+
         // check if password are matching
         if (!password.equals(repeatPassword)) {
-            resp.sendError(400, "Passwords do not match");
+            webContext.setVariable("errorMessage", "Password non coincidono");
         }
 
         String path;
-        if(name == null || surname == null || email == null){
+        if(name == null || surname == null || email == null
+                || name.isEmpty() || surname.isEmpty() || email.isEmpty()
+                || password.isEmpty() || repeatPassword.isEmpty()) {
+
             // invalid fields
-            ServletContext servletContext = getServletContext();
-            final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
-            webContext.setVariable("nameReceived", (name != null ? name : ""));
-            webContext.setVariable("surnameReceived", ( surname != null ? surname : ""));
-            webContext.setVariable("emailReceived", (email != null ? email : ""));
-            webContext.setVariable("passwordReceived", password);
-            webContext.setVariable("repeatPassword", (repeatPassword != null ? repeatPassword : ""));
-            webContext.setVariable("errorMessageReceived", "Some fields are missing");
-            path = "/WEB-INF/register.html";
+            path = "/register.html";
+            webContext.setVariable("errorMessage", "Errore: credenziali mancanti o nulle");
             templateEngine.process(path, webContext, resp.getWriter());
         } else {
 

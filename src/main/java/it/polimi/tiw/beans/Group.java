@@ -1,4 +1,4 @@
-package com.example.tiw_2024.beans;
+package it.polimi.tiw.beans;
 
 import java.util.Date;
 

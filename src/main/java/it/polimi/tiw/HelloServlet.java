@@ -1,4 +1,4 @@
-package com.example.tiw_2024;
+package it.polimi.tiw;
 
 import java.io.*;
 import javax.servlet.http.*;

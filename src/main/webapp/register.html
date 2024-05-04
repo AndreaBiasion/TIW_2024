@@ -7,34 +7,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../Styling/Register.css" th:href="@{/Styling/Register.css}" />
-    <link rel="stylesheet" type="text/css" href="../Styling/General.css">
+    <link rel="stylesheet" type="text/css" href="Styling/Register.css" th:href="@{/Styling/Register.css}" />
+    <link rel="stylesheet" type="text/css" href="Styling/General.css">
 </head>
 <body>
 <div class="container">
     <h1>Registrati</h1>
-    <form action="Register" th:action="@{/register}" method="post">
+    <form action="Register" method="POST">
         <div class="form-group">
             <label for="name">Nome</label>
             <input type="text" id="name" name="name" th:value="${nameReceived}" th:required="true">
         </div>
         <div class="form-group">
             <label for="surname">Cognome</label>
-            <input type="text" id="surname" name="surname" th:value="${surnameReceived}" th:required="true">
+            <input type="text" id="surname" name="surname" th:required="true">
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" th:value="${emailReceived}" th:required="true">
+            <input type="email" id="email" name="email" th:required="true">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" th:value="${passwordReceived}" minlength="4" th:required="true">
+            <input type="password" id="password" name="password" minlength="4" th:required="true">
         </div>
         <div class="form-group">
             <label for="password">Ripeti password</label>
-            <input type="password" name="repeatPassword" minlength="4" th:value="${repeatPasswordReceived}" th:required="true">
+            <input type="password" name="repeatPassword" minlength="4" th:required="true">
         </div>
-        <button type="submit" value="Register">Crea account</button>
+
+        <p th:text="${errorMessage}"></p>
+        <button type="submit">Crea account</button>
     </form>
 </div>
 </body>

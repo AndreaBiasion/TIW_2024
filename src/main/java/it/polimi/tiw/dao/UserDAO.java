@@ -1,6 +1,6 @@
-package com.example.tiw_2024.dao;
+package it.polimi.tiw.dao;
 
-import com.example.tiw_2024.beans.User;
+import it.polimi.tiw.beans.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
