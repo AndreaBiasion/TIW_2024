@@ -62,6 +62,15 @@ public class UserDAO {
         }
     }
 
+    public boolean checkRegister(String email) throws SQLException {
+        String query = "SELECT * FROM utente WHERE email = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, email);
+        ResultSet result = statement.executeQuery();
+
+        return result.isBeforeFirst();
+    }
+
     /**
      * Adds a new user to the database.
      * @param name the name of the user.

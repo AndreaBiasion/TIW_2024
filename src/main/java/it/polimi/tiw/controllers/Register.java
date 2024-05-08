@@ -14,19 +14,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * This servlet class handles the registration process.
  * It provides methods for handling HTTP GET and POST requests related to registration.
  */
-@WebServlet(name = "/Register", value = "/Register")
+@WebServlet(name = "registerServlet", value = "/register")
 public class Register extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
     private TemplateEngine templateEngine;
+
+    private String message;
 
     /**
      * Default constructor.
@@ -48,56 +52,86 @@ public class Register extends HttpServlet {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
+        message = "working!";
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html");
+
+        // Hello
+        PrintWriter out = response.getWriter();
+        out.println("<html><body>");
+        out.println("<h1>" + message + "</h1>");
+        out.println("</body></html>");
     }
 
     /**
      * Handles HTTP POST requests for registration.
-     * @param req  the HttpServletRequest object containing the request parameters.
-     * @param resp the HttpServletResponse object for sending the response.
      * @throws ServletException if an error occurs while processing the request.
      * @throws IOException      if an I/O error occurs while handling the request.
      */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Implementation for handling registration POST requests goes here
-        String name = req.getParameter("name");
-        String surname = req.getParameter("surname");
-        String email = req.getParameter("email");
-        String password = req.getParameter("password");
-        String repeatPassword = req.getParameter("repeatPassword");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        ServletContext servletContext = getServletContext();
-        final WebContext webContext = new WebContext(req, resp, servletContext, req.getLocale());
-
-
-        // check if password are matching
-        if (!password.equals(repeatPassword)) {
-            webContext.setVariable("errorMessage", "Password non coincidono");
-        }
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
+        String repassword = request.getParameter("repassword");
 
         String path;
-        if(name == null || surname == null || email == null
-                || name.isEmpty() || surname.isEmpty() || email.isEmpty()
-                || password.isEmpty() || repeatPassword.isEmpty()) {
+        ServletContext context = getServletContext();
+        final WebContext ctx = new WebContext(request, response, context, request.getLocale());
 
-            // invalid fields
+        // controllo password
+        if(!password.equals(repassword)) {
             path = "/register.html";
-            webContext.setVariable("errorMessage", "Errore: credenziali mancanti o nulle");
-            templateEngine.process(path, webContext, resp.getWriter());
+            ctx.setVariable("errorMessage", "Errore: Password non coincidono");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+
+        // controllo field
+        if(email == null || password == null || name == null || surname == null || email.isEmpty() || password.isEmpty() || name.isEmpty() || surname.isEmpty()) {
+            path = "/register.html";
+            ctx.setVariable("errorMsg", "Errore: Credenziali mancanti o nulle");
+            templateEngine.process(path, ctx, response.getWriter());
         } else {
 
-            // create new user
             UserDAO userDAO = new UserDAO(connection);
 
+            boolean isDuplicate = false;
             try {
-                userDAO.addUser(name, surname, email, password);
+                isDuplicate = userDAO.checkRegister(email);
             } catch (SQLException e) {
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database can't be reached");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL error: impossibile controllare unicità dell'email");
             }
 
-            path = getServletContext().getContextPath() + "/login.html";
-            resp.sendRedirect(path);
+
+            if(isDuplicate) {
+                ctx.setVariable("errorMessage", "L'email gia' in uso!");
+            } else {
+                try {
+                    userDAO.addUser(name, surname, email, password);
+                } catch (SQLException e) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile registrare l'utente");
+                    return;
+                }
+
+                path = getServletContext().getContextPath() + "/login.html";
+                response.sendRedirect(path);
+            }
+
+
         }
+
+        // error handling
+        path = "/register.html";
+        templateEngine.process(path, ctx, response.getWriter());
+
+
     }
 
     /**
@@ -105,9 +139,9 @@ public class Register extends HttpServlet {
      */
     @Override
     public void destroy() {
-        try {
+        try{
             ConnectionManager.closeConnection(connection);
-        } catch (SQLException e) {
+        }catch(SQLException e){
             e.printStackTrace();
         }
     }

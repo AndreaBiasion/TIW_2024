@@ -13,26 +13,26 @@
 <body>
 <div class="container">
     <h1>Registrati</h1>
-    <form action="Register" method="POST">
+    <form action="register" method="post">
         <div class="form-group">
             <label for="name">Nome</label>
-            <input type="text" id="name" name="name" th:value="${nameReceived}" th:required="true">
+            <input type="text" id="name" name="name" required>
         </div>
         <div class="form-group">
             <label for="surname">Cognome</label>
-            <input type="text" id="surname" name="surname" th:required="true">
+            <input type="text" id="surname" name="surname" required>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" th:required="true">
+            <input type="email" id="email" name="email" required>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" minlength="4" th:required="true">
+            <input type="password" id="password" name="password" required>
         </div>
         <div class="form-group">
             <label for="password">Ripeti password</label>
-            <input type="password" name="repeatPassword" minlength="4" th:required="true">
+            <input type="password" name="repassword" required>
         </div>
 
         <p th:text="${errorMessage}"></p>
