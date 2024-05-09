@@ -1,4 +1,4 @@
 package it.polimi.tiw.controllers;
 
-public class ViewHome {
+public class GoToCanc {
 }
