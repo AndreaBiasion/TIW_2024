@@ -31,33 +31,23 @@ public class UserDAO {
      */
     public User checkCredentials(String email, String password) throws SQLException {
         String query = "SELECT * FROM utente WHERE email = ? AND password = ?";
-        ResultSet resultSet = null;
-        PreparedStatement preparedStatement = null;
 
-        try {
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, email);
-            preparedStatement.setString(2, password);
-            resultSet = preparedStatement.executeQuery();
-
-            if (!resultSet.next()) {
-                return null; // No user found with the provided credentials
-            } else {
-                resultSet.next();
-                User user = new User();
-                user.setId(resultSet.getInt("id"));
-                user.setName(resultSet.getString("name"));
-                user.setSurname(resultSet.getString("surname"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPassword(resultSet.getString("password"));
-                return user; // Return the found user
-            }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-            if (preparedStatement != null) {
-                preparedStatement.close();
+        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+            pstatement.setString(1, email);
+            pstatement.setString(2, password);
+            try (ResultSet result = pstatement.executeQuery();) {
+                if (!result.isBeforeFirst()) // no results, credential check failed
+                    return null;
+                else {
+                    result.next();
+                    User user = new User();
+                    user.setId(result.getInt("id"));
+                    user.setName(result.getString("nome"));
+                    user.setSurname(result.getString("cognome"));
+                    user.setEmail(email);
+                    user.setPassword(password);
+                    return user;
+                }
             }
         }
     }
