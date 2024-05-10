@@ -1,0 +1,20 @@
+title Event: Click over a grup
+
+activate ShowGroupDetail
+activate GroupDAO
+note left of ShowGroupDetail: @webServlet\n("/ShowGroupDetail\n?groupId=gid")
+[->ShowGroupDetail: doGet()
+ShowGroupDetail->GroupDAO: findGroupDetails(gid)
+ShowGroupDetail<-GroupDAO: groupDetails
+
+activate request
+space 3
+deactivate GroupDAO
+
+ShowGroupDetail->request: SetAttribute("groupDetails", groupDetails)
+activate DettagliGruppo.html
+space 3
+deactivate request
+
+ShowGroupDetail->DettagliGruppo.html: forward
+
