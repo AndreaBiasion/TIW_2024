@@ -8,7 +8,6 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -72,7 +71,7 @@ public class CheckLogin extends HttpServlet {
                 ctx.setVariable("errorMessage", "Email o password errati");
                 templateEngine.process(path, ctx, response.getWriter());
             }else{
-                path = request.getContextPath() + "/home.html";
+                path = request.getContextPath() + "/goToHome";
                 request.getSession().setMaxInactiveInterval(300);
                 request.getSession().setAttribute("user", user);
                 response.sendRedirect(path);
