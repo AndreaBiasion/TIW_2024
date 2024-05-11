@@ -4,6 +4,10 @@ import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.beans.User;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupDAO {
@@ -20,8 +24,23 @@ public class GroupDAO {
     }
 
     // returns the groups associated with a user.id
-    public void getGroupsById(int id) {
+    public List<Group> getGroupsById(int id) throws SQLException {
+        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, id);
 
+        ResultSet resultSet = statement.executeQuery();
+
+        List<Group> groups = new ArrayList<>();
+        while (resultSet.next()) {
+            Group group = new Group();
+            group.setId(resultSet.getInt("id"));
+            group.setTitle(resultSet.getString("titolo"));
+
+            groups.add(group);
+        }
+
+        return groups;
     }
 
     // returns the details of a specific group

@@ -1,7 +1,11 @@
 package it.polimi.tiw.controllers;
 
+import it.polimi.tiw.beans.Group;
+import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.GroupDAO;
 import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -11,8 +15,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(name = "GoToHomeServlet", value = "/goToHome")
 public class GoToHome extends HttpServlet {
@@ -38,7 +45,42 @@ public class GoToHome extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().append("GoToHomeServlet is working");
+        HttpSession session = request.getSession();
+
+        String path = "/home.html";
+        ServletContext servletContext = getServletContext();
+        WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+
+        User user = (User) session.getAttribute("user");
+        GroupDAO groupDAO = new GroupDAO(connection);
+
+        // templateEngine.process(path, ctx, response.getWriter());
+
+        try {
+
+            List<Group> groups = groupDAO.getGroupsById(user.getId());
+
+            if(groups.isEmpty()) {
+                ctx.setVariable("noGroupsMessage", "Nessun gruppo trovato");
+                templateEngine.process(path, ctx, response.getWriter());
+            } else {
+                ctx.setVariable("groups", groups);
+                templateEngine.process(path, ctx, response.getWriter());
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void destroy() {
+        try{
+            ConnectionManager.closeConnection(connection);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
 }

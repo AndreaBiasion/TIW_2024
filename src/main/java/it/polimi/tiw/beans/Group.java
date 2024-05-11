@@ -13,15 +13,6 @@ public class Group {
     private String title;
     private Date date_creation;
 
-    // temporary
-    public Group(int id, int activity_duration, int min_parts, int max_parts, String title, Date date_creation) {
-        this.id = id;
-        this.activity_duration = activity_duration;
-        this.min_parts = min_parts;
-        this.max_parts = max_parts;
-        this.title = title;
-        this.date_creation = date_creation;
-    }
 
     public int getId() {
         return id;

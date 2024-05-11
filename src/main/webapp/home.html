@@ -6,5 +6,25 @@
 </head>
 <body>
     <h1>Home</h1>
+    <p th:text="${session.user.name + ' ' + session.user.surname}">NOME COGNOME</p>
+    <a href="@{/Logout}"><button type="submit">Logout</button></a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>I miei gruppi</th>
+            </tr>
+        </thead>
+        <tbody th:remove="all-but-first">
+        <tr th:each="group : ${groups}">
+            <td th:text="${group.id}"></td>
+            <td th:text="${group.title}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:text="${noGroupsMessage}"></p>
+
+
 </body>
 </html>
