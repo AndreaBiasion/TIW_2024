@@ -31,7 +31,7 @@
             <tbody th:remove="all-but-first">
             <tr th:each="group : ${groups}">
                 <td th:text="${group.title}"></td>
-                <td><a href="#">Vedi dettagli</a> </td>
+                <td><a th:href="@{/fetchDetails(IDGroup=${group.id})}">Vedi dettagli</a></td>
             </tr>
             </tbody>
 

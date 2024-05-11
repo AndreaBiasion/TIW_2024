@@ -44,7 +44,7 @@ public class GroupDAO {
     }
 
     // returns the details of a specific group
-    public void getDetails(Group group) {
-
+    public Group getGroupById(int idgroup) throws SQLException {
+        return null;
     }
 }
