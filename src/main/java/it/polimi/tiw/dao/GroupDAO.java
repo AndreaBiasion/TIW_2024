@@ -45,6 +45,25 @@ public class GroupDAO {
 
     // returns the details of a specific group
     public Group getGroupById(int idgroup) throws SQLException {
-        return null;
+        String query = "SELECT * FROM gruppo WHERE id = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, idgroup);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        if(!resultSet.isBeforeFirst())
+            return null;
+
+
+        resultSet.next();
+        Group group = new Group();
+        group.setId(resultSet.getInt("id"));
+        group.setTitle(resultSet.getString("titolo"));
+        group.setDate_creation(resultSet.getTimestamp("data_creazione"));
+        group.setActivity_duration(resultSet.getInt("durata_att"));
+        group.setMin_parts(resultSet.getInt("min_part"));
+        group.setMax_parts(resultSet.getInt("max_part"));
+        return group;
+
     }
 }

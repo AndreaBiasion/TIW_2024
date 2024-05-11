@@ -3,6 +3,7 @@ package it.polimi.tiw.controllers;
 import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.GroupDAO;
+import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -62,12 +63,14 @@ public class FetchDetails extends HttpServlet {
         }
 
         GroupDAO groupDAO = new GroupDAO(connection);
+        UserDAO userDAO = new UserDAO(connection);
 
         // templateEngine.process(path, ctx, response.getWriter());
 
         try {
 
             Group group = groupDAO.getGroupById(IDGroup);
+            List<User> usersList = userDAO.getUsersFromGroup(IDGroup);
 
             // If the specified account isn't owned by the current users, redirects to the homepage
             if(group == null){
@@ -76,6 +79,7 @@ public class FetchDetails extends HttpServlet {
                 return;
             }
 
+            ctx.setVariable("users", usersList);
             path = "/dettagli.html";
             templateEngine.process(path, ctx, response.getWriter());
 

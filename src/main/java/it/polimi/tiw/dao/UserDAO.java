@@ -1,11 +1,14 @@
 package it.polimi.tiw.dao;
 
+import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.beans.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class handles data access operations related to users.
@@ -85,5 +88,24 @@ public class UserDAO {
                 preparedStatement.close();
             }
         }
+    }
+
+    public List<User> getUsersFromGroup(int idgroup) throws SQLException {
+        String query = "select nome,cognome from partecipazione join utente on partecipazione.idpart = utente.id where idgruppo = ?";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setInt(1, idgroup);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        List<User> users = new ArrayList<>();
+        while (resultSet.next()) {
+            User user = new User();
+            user.setName(resultSet.getString("nome"));
+            user.setSurname(resultSet.getString("cognome"));
+
+            users.add(user);
+        }
+
+        return users;
     }
 }
