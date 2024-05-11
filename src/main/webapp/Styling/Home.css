@@ -14,9 +14,8 @@ body {
 }
 
 .container{
-    text-align: center;
-    align-items: center;
     display: flex;
+    text-align: center;
     flex-direction: column;
 }
 
@@ -28,19 +27,17 @@ header{
     margin: 30px 30px;
 }
 
-table {
-    margin-top: 20px;
-    font-size: 20px;
-}
-
 .noGroupsMsg {
     margin-top: 10px;
 }
 
 .logout_btn {
+    text-align: center;
+    width: 130px;
     margin-top: 10px;
     font-size: 14px;
     padding: 13px 20px;
+    align-self: center;
     background-color: #007bff;
     border: none;
     border-radius: 8px;
@@ -53,11 +50,14 @@ table {
 }
 
 .create_group_btn {
+    text-align: center;
+    width: 130px;
     margin-top: 50px;
     font-size: 14px;
     padding: 13px 20px;
     background-color: #49BEAA;
     color: #fff;
+    align-self: center;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -74,6 +74,8 @@ table {
 }
 
 .details_btn {
+    text-decoration: none;
+    color: white;
     font-size: 14px;
     padding: 8px 20px;
     background-color: #007bff;

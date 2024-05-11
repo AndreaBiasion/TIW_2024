@@ -25,7 +25,7 @@ public class GroupDAO {
 
     // returns the groups associated with a user.id
     public List<Group> getGroupsById(int id) throws SQLException {
-        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE id = ?";
+        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE idpart = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setInt(1, id);
 
