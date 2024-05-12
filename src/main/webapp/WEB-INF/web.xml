@@ -29,6 +29,7 @@
         <url-pattern>/goToHome</url-pattern>
         <url-pattern>/fetchDetails</url-pattern>
         <url-pattern>/createGroup</url-pattern>
+        <url-pattern>/goToAnag</url-pattern>
     </filter-mapping>
     <welcome-file-list>
         <welcome-file>login.html</welcome-file>
