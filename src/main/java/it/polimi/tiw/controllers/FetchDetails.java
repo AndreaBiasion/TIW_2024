@@ -69,7 +69,13 @@ public class FetchDetails extends HttpServlet {
 
         try {
 
+            // retrieves group by id
             Group group = groupDAO.getGroupById(IDGroup);
+
+            // retrieves user from the session
+            User user = (User) session.getAttribute("user");
+
+            // list of partecipants
             List<User> usersList = userDAO.getUsersFromGroup(IDGroup);
 
             // If the specified account isn't owned by the current users, redirects to the homepage
@@ -79,12 +85,28 @@ public class FetchDetails extends HttpServlet {
                 return;
             }
 
+            ctx.setVariable("groupTitle", "Dettagli " + group.getTitle());
             ctx.setVariable("users", usersList);
             path = "/dettagli.html";
             templateEngine.process(path, ctx, response.getWriter());
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL Error: Impossibile ottenere i dettagli");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPost(req, resp);
+    }
+
+
+    @Override
+    public void destroy() {
+        try{
+            ConnectionManager.closeConnection(connection);
+        }catch(SQLException e){
+            e.printStackTrace();
         }
     }
 }

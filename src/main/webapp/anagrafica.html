@@ -11,9 +11,14 @@
 </head>
 <body>
 
+<header>
+    <h1>Anagrafica</h1>
+</header>
+
+
 <div class="container">
 
-    <h1 style="margin-top: 60px" th:text="${groupTitle}" th:id="group_name"></h1>
+    <h1>Utenti registrati</h1>
 
     <table class="table table-bordered ">
         <thead>
@@ -28,10 +33,11 @@
             <td th:text="${user.surname}"></td>
         </tr>
         </tbody>
+
+        <p th:text="${noUsersMessage}"></p>
     </table>
 
 </div>
-
 
 </body>
 </html>

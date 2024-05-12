@@ -108,4 +108,24 @@ public class UserDAO {
 
         return users;
     }
+
+    public List<User> getAllUsers() throws SQLException {
+        String query = "select * from utente";
+        PreparedStatement statement = connection.prepareStatement(query);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        List<User> users = new ArrayList<>();
+        while (resultSet.next()) {
+            User user = new User();
+            user.setName(resultSet.getString("nome"));
+            user.setSurname(resultSet.getString("cognome"));
+
+            users.add(user);
+        }
+
+        return users;
+    }
+
+
 }

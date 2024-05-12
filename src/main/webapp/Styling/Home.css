@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-/* Apply some basic styles to the body */
+
 body {
     font-family: Raleway, sans-serif;
     background-color: #f5f5f5;
@@ -31,6 +31,29 @@ header{
     margin-top: 10px;
 }
 
+.create_btn {
+    text-align: center;
+    width: 130px;
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 13px 20px;
+    align-self: center;
+    background-color: #49beaa;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create_btn > a {
+    text-decoration: none;
+    color: white;
+}
+
+.create_btn:hover {
+    background-color: #3BA593;
+}
+
 .logout_btn {
     text-align: center;
     width: 130px;
@@ -45,46 +68,12 @@ header{
     transition: background-color 0.3s;
 }
 
+.logout_btn > a {
+    text-decoration: none;
+    color: white;
+}
+
 .logout_btn:hover {
     background-color: #0056b3;
 }
 
-.create_group_btn {
-    text-align: center;
-    width: 130px;
-    margin-top: 50px;
-    font-size: 14px;
-    padding: 13px 20px;
-    background-color: #49BEAA;
-    color: #fff;
-    align-self: center;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.create_group_btn:hover {
-    background-color: #3BA593;
-}
-
-.logout_btn > a {
-    text-decoration: none;
-    color: #fff;
-}
-
-.details_btn {
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
-    padding: 8px 20px;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.details_btn:hover {
-    background-color: #0056b3;
-}

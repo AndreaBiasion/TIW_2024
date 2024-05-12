@@ -77,7 +77,6 @@ public class CheckLogin extends HttpServlet {
                 response.sendRedirect(path);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile validare le credenziali");
         }
 

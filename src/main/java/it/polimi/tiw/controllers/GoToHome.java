@@ -54,7 +54,6 @@ public class GoToHome extends HttpServlet {
         User user = (User) session.getAttribute("user");
         GroupDAO groupDAO = new GroupDAO(connection);
 
-        // templateEngine.process(path, ctx, response.getWriter());
 
         try {
 
