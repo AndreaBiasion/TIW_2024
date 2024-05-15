@@ -14,6 +14,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,7 +44,10 @@ public class GoToAnag extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
+
+        int min_part = session.getAttribute("min_x")==null?0:Integer.parseInt(session.getAttribute("min_x").toString());
+        int max_part = session.getAttribute("max_x")==null?0:Integer.parseInt(session.getAttribute("max_x").toString());
 
         String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
@@ -52,22 +56,31 @@ public class GoToAnag extends HttpServlet {
         // User user = (User) session.getAttribute("user");
         UserDAO userDAO = new UserDAO(connection);
 
-
         try {
 
             List<User> users = userDAO.getAllUsers();
 
             if(users.isEmpty()) {
                 ctx.setVariable("noUsersMessage", "Nessun utente trovato");
-                templateEngine.process(path, ctx, response.getWriter());
             } else {
                 ctx.setVariable("users", users);
-                templateEngine.process(path, ctx, response.getWriter());
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+
+        try {
+            ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + min_part + " utenti");
+        } catch (NumberFormatException e) {
+            path = "/anagrafica.html";
+            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+        templateEngine.process(path, ctx, response.getWriter());
     }
 
     @Override

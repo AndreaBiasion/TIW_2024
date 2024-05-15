@@ -68,22 +68,57 @@ public class CreateGroup extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String title = request.getParameter("title");
+        String durataStr = request.getParameter("durata_att");
+        String minPartStr = request.getParameter("min_part");
+        String maxPartStr = request.getParameter("max_part");
 
         String path;
         ServletContext context = getServletContext();
         final WebContext ctx = new WebContext(request, response, context, request.getLocale());
 
 
-        // controllo field
-        if(title == null || title.isEmpty() ) {
-            path = "/group.html";
-            ctx.setVariable("errorMsg", "Errore: Titolo mancante");
-            templateEngine.process(path, ctx, response.getWriter());
-        } else {
-            path = getServletContext().getContextPath() + "/goToAnag";
-            response.sendRedirect(path);
 
+
+        if (title == null || title.isEmpty()) {
+            path = "/group.html";
+            ctx.setVariable("errorMessage", "Errore: Titolo mancante");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
         }
+
+        int min_part;
+        int max_part;
+
+        try {
+            min_part = Integer.parseInt(minPartStr);
+            max_part = Integer.parseInt(maxPartStr);
+        } catch (NumberFormatException e) {
+            path = "/group.html";
+            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+        int durata = Integer.parseInt(durataStr);
+
+        if(durata <= 0) {
+            path = "/group.html";
+            ctx.setVariable("errorMessage", "Errore: Numero di giorni errato");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+        if (min_part <= 0 || min_part >= max_part) {
+            path = "/group.html";
+            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti errato");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+        path = getServletContext().getContextPath() + "/goToAnag";
+        request.getSession().setAttribute("min_x", min_part);
+        request.getSession().setAttribute("max_x", max_part);
+        response.sendRedirect(path);
 
     }
 
