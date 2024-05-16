@@ -3,10 +3,7 @@ package it.polimi.tiw.dao;
 import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.beans.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +16,49 @@ public class GroupDAO {
     }
 
     // creates the group
-    public void createGroup(List<User> partecipants) {
+    public void createGroup(List<Integer> part_ids, Group group) throws SQLException {
+        String titolo = group.getTitle();
+        int durata = group.getActivity_duration();
+        int min_part = group.getMin_parts();
+        int max_part = group.getMax_parts();
 
+        java.util.Date utilDate = new java.util.Date();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+        String insertGroupQuery = "INSERT INTO gruppo (titolo, data_creazione, durata_att, min_part, max_part) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertGroupQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, titolo);
+            preparedStatement.setDate(2, sqlDate);
+            preparedStatement.setInt(3, durata);
+            preparedStatement.setInt(4, min_part);
+            preparedStatement.setInt(5, max_part);
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating group failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    group.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Creating group failed, no ID obtained.");
+                }
+            }
+        }
+
+        String insertParticipationQuery = "INSERT INTO partecipazione (idpart, idgruppo) VALUES (?, ?)";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertParticipationQuery)) {
+            for (int partId : part_ids) {
+                preparedStatement.setInt(1, partId);
+                preparedStatement.setInt(2, group.getId());
+                preparedStatement.executeUpdate();
+            }
+        }
     }
+
 
     // returns the groups associated with a user.id
     public List<Group> getGroupsById(int id) throws SQLException {

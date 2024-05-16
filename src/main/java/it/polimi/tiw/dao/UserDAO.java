@@ -118,6 +118,7 @@ public class UserDAO {
         List<User> users = new ArrayList<>();
         while (resultSet.next()) {
             User user = new User();
+            user.setId(resultSet.getInt("id"));
             user.setName(resultSet.getString("nome"));
             user.setSurname(resultSet.getString("cognome"));
 

@@ -1,6 +1,8 @@
 package it.polimi.tiw.controllers;
 
+import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.GroupDAO;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "anagraficaServelt", value = "/goToAnag")
@@ -46,8 +49,7 @@ public class GoToAnag extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        int min_part = session.getAttribute("min_x")==null?0:Integer.parseInt(session.getAttribute("min_x").toString());
-        int max_part = session.getAttribute("max_x")==null?0:Integer.parseInt(session.getAttribute("max_x").toString());
+        Group g = (Group) session.getAttribute("group");
 
         String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
@@ -55,6 +57,16 @@ public class GoToAnag extends HttpServlet {
 
         // User user = (User) session.getAttribute("user");
         UserDAO userDAO = new UserDAO(connection);
+
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        if (errorMessage != null) {
+            ctx.setVariable("errorMessage", errorMessage);
+        }
+
+        Integer errorCount = (Integer) session.getAttribute("errorCount");
+        if (errorMessage != null) {
+            System.out.println("Error count: " + errorCount);
+        }
 
         try {
 
@@ -72,7 +84,7 @@ public class GoToAnag extends HttpServlet {
 
 
         try {
-            ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + min_part + " utenti");
+            ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + g.getMax_parts() + " utenti");
         } catch (NumberFormatException e) {
             path = "/anagrafica.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
@@ -84,8 +96,83 @@ public class GoToAnag extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        HttpSession session = request.getSession();
+
+        Group g = (Group) session.getAttribute("group");
+        Integer errorCount = (Integer) session.getAttribute("errorCount");
+
+        if (errorCount == null) {
+            errorCount = 0;
+        }
+
+        String path = "/anagrafica.html";
+        ServletContext servletContext = getServletContext();
+        WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+
+        String[] selectedUsers = request.getParameterValues("selectedUsers");
+
+        List<Integer> usersIds = new ArrayList<>();
+
+        int selectedCount = 0;
+        if (selectedUsers != null) {
+            selectedCount = selectedUsers.length;
+            for (String userId : selectedUsers) {
+                // System.out.println(userId);
+                usersIds.add(Integer.parseInt(userId));
+            }
+        }
+
+        System.out.println("Selected: " + selectedCount);
+
+        while (errorCount < 2) {
+
+            if(selectedCount < g.getMin_parts()) {
+                errorCount++;
+                path = getServletContext().getContextPath() + "/goToAnag";
+                int delta = g.getMin_parts() - selectedCount;
+                request.getSession().setAttribute("errorMessage", "Troppi pochi utenti selezionati, aggiungerne almeno " + delta);
+                request.getSession().setAttribute("errorCount", errorCount);
+                response.sendRedirect(path);
+                return;
+            }
+
+            if(selectedCount > g.getMax_parts()) {
+                errorCount++;
+                path = request.getContextPath() + "/goToAnag";
+                int delta = selectedCount - g.getMax_parts();
+                request.getSession().setAttribute("errorMessage", "Troppi utenti selezionati, eliminarne almeno " + delta);
+                request.getSession().setAttribute("errorCount", errorCount);
+                response.sendRedirect(path);
+                return;
+            }
+
+            if(selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
+                System.out.println("Gruppo in fase di creazione");
+                GroupDAO groupDAO = new GroupDAO(connection);
+                try {
+                    groupDAO.createGroup(usersIds, g);
+                    System.out.println("Gruppo creato con successo");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                path = request.getContextPath() + "/goToHome";
+                response.sendRedirect(path);
+                return;
+            }
+
+        }
+
+        // You can now use the selectedCount for further processing
+        request.setAttribute("selectedCount", selectedCount);
+
+        request.getSession().setAttribute("errorCount", 0);
+        path = "cancellazione.html";
+        templateEngine.process(path, ctx, response.getWriter());
+
+
     }
 
 

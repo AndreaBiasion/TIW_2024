@@ -1,5 +1,6 @@
 package it.polimi.tiw.controllers;
 
+import it.polimi.tiw.beans.Group;
 import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -116,8 +117,12 @@ public class CreateGroup extends HttpServlet {
         }
 
         path = getServletContext().getContextPath() + "/goToAnag";
-        request.getSession().setAttribute("min_x", min_part);
-        request.getSession().setAttribute("max_x", max_part);
+        Group group = new Group();
+        group.setTitle(title);
+        group.setActivity_duration(durata);
+        group.setMin_parts(min_part);
+        group.setMax_parts(max_part);
+        request.getSession().setAttribute("group", group);
         response.sendRedirect(path);
 
     }
