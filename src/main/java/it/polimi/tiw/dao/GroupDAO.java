@@ -63,7 +63,7 @@ public class GroupDAO {
 
     // returns the groups associated with a user.id
     public List<Group> getGroupsByUsername(String username) throws SQLException {
-        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE idpart = ?";
+        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE idpart = ? AND idpart = username_creatore";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, username);
 
@@ -80,7 +80,26 @@ public class GroupDAO {
 
         return groups;
     }
-    
+
+
+    public List<Group> getGroupsByUsernameInvited(String username) throws SQLException {
+        String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE idpart = ? AND idpart <> gruppo.username_creatore";
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, username);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        List<Group> groups = new ArrayList<>();
+        while (resultSet.next()) {
+            Group group = new Group();
+            group.setId(resultSet.getInt("id"));
+            group.setTitle(resultSet.getString("titolo"));
+
+            groups.add(group);
+        }
+
+        return groups;
+    }
 
     // returns the details of a specific group
     public Group getGroupById(int idgroup) throws SQLException {

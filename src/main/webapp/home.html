@@ -16,6 +16,11 @@
         <p th:text="${session.user.username}" class="username_welcome">USERNAME</p>
     </header>
 
+    <div class="btn_container">
+        <a class="create_btn"  th:href="@{/createGroup}">Crea gruppo</a>
+        <a class="logout_btn" th:href="@{/logout}" >Logout</a>
+    </div>
+
 
     <div class="container">
 
@@ -38,10 +43,28 @@
             <p th:text="${noGroupsMessage}"></p>
         </table>
 
+        <h1>Gruppi in cui sei stato invitato</h1>
+
+        <table class="table table-bordered ">
+            <thead>
+            <tr>
+                <th>Gruppo</th>
+                <th>Dettagli</th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="group : ${groupsInvited}">
+                <td th:text="${group.title}"></td>
+                <td><a th:href="@{/fetchDetails(IDGroup=${group.id})}">Vedi dettagli</a></td>
+            </tr>
+            </tbody>
+
+            <p th:text="${noGroupsInvitedMessage}"></p>
+        </table>
+
     </div>
 
-    <a class="create_btn"  th:href="@{/createGroup}">Crea gruppo</a>
-    <a class="logout_btn" th:href="@{/logout}" >Logout</a>
+
 
 </body>
 </html>

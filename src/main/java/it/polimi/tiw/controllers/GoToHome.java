@@ -59,13 +59,21 @@ public class GoToHome extends HttpServlet {
 
             List<Group> groups = groupDAO.getGroupsByUsername(user.getUsername());
 
+            List<Group> groupsInvited = groupDAO.getGroupsByUsernameInvited(user.getUsername());
+
             if(groups.isEmpty()) {
                 ctx.setVariable("noGroupsMessage", "Nessun gruppo trovato");
-                templateEngine.process(path, ctx, response.getWriter());
-            } else {
-                ctx.setVariable("groups", groups);
-                templateEngine.process(path, ctx, response.getWriter());
             }
+
+            if(groupsInvited.isEmpty()) {
+                ctx.setVariable("noGroupsInvitedMessage", "Nessun gruppo trovato");
+            }
+
+
+            ctx.setVariable("groups", groups);
+            ctx.setVariable("groupsInvited", groupsInvited);
+            templateEngine.process(path, ctx, response.getWriter());
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
