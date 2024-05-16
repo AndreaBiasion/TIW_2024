@@ -73,6 +73,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
@@ -103,17 +104,17 @@ public class Register extends HttpServlet {
 
             boolean isDuplicate = false;
             try {
-                isDuplicate = userDAO.checkRegister(email);
+                isDuplicate = userDAO.checkRegister(email, username);
             } catch (SQLException e) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SQL error: impossibile controllare unicità dell'email");
             }
 
 
             if(isDuplicate) {
-                ctx.setVariable("errorMessage", "L'email gia' in uso!");
+                ctx.setVariable("errorMessage", "L'email/username gia' in uso!");
             } else {
                 try {
-                    userDAO.addUser(name, surname, email, password);
+                    userDAO.addUser(username, name, surname, email, password);
                 } catch (SQLException e) {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossibile registrare l'utente");
                     return;

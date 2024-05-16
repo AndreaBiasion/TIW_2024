@@ -55,7 +55,7 @@ public class GoToAnag extends HttpServlet {
         ServletContext servletContext = getServletContext();
         WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 
-        // User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
         UserDAO userDAO = new UserDAO(connection);
 
         String errorMessage = (String) session.getAttribute("errorMessage");
@@ -70,7 +70,7 @@ public class GoToAnag extends HttpServlet {
 
         try {
 
-            List<User> users = userDAO.getAllUsers();
+            List<User> users = userDAO.getAllUsers(user.getUsername());
 
             if(users.isEmpty()) {
                 ctx.setVariable("noUsersMessage", "Nessun utente trovato");
@@ -100,6 +100,7 @@ public class GoToAnag extends HttpServlet {
 
         HttpSession session = request.getSession();
 
+        User user = (User) session.getAttribute("user");
         Group g = (Group) session.getAttribute("group");
         Integer errorCount = (Integer) session.getAttribute("errorCount");
 
@@ -113,16 +114,17 @@ public class GoToAnag extends HttpServlet {
 
         String[] selectedUsers = request.getParameterValues("selectedUsers");
 
-        List<Integer> usersIds = new ArrayList<>();
+        List<String> usernames = new ArrayList<>();
 
         int selectedCount = 0;
         if (selectedUsers != null) {
             selectedCount = selectedUsers.length;
-            for (String userId : selectedUsers) {
+            for (String username : selectedUsers) {
                 // System.out.println(userId);
-                usersIds.add(Integer.parseInt(userId));
+                usernames.add(username);
             }
         }
+
 
         System.out.println("Selected: " + selectedCount);
 
@@ -152,7 +154,8 @@ public class GoToAnag extends HttpServlet {
                 System.out.println("Gruppo in fase di creazione");
                 GroupDAO groupDAO = new GroupDAO(connection);
                 try {
-                    groupDAO.createGroup(usersIds, g);
+                    usernames.add(user.getUsername());
+                    groupDAO.createGroup(usernames, g, user.getUsername());
                     System.out.println("Gruppo creato con successo");
                 } catch (SQLException e) {
                     throw new RuntimeException(e);

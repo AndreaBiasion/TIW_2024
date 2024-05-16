@@ -44,10 +44,11 @@ header{
     cursor: pointer;
     transition: background-color 0.3s;
     text-decoration: none;
-    color: white;
 }
 
 .create_btn:hover {
+    text-decoration: none;
+    color: white;
     background-color: #3BA593;
 }
 
@@ -58,6 +59,7 @@ header{
     font-size: 14px;
     padding: 13px 20px;
     align-self: center;
+    align-items: center;
     background-color: #007bff;
     border: none;
     border-radius: 8px;
@@ -68,6 +70,16 @@ header{
 }
 
 .logout_btn:hover {
+    text-decoration: none;
+    color: white;
     background-color: #0056b3;
 }
 
+a {
+    text-decoration: none;
+    color: white;
+}
+
+td > a {
+    color: #007bff;
+}

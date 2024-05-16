@@ -44,7 +44,7 @@ public class UserDAO {
                 else {
                     result.next();
                     User user = new User();
-                    user.setId(result.getInt("id"));
+                    user.setUsername(result.getString("username"));
                     user.setName(result.getString("nome"));
                     user.setSurname(result.getString("cognome"));
                     user.setEmail(email);
@@ -55,10 +55,11 @@ public class UserDAO {
         }
     }
 
-    public boolean checkRegister(String email) throws SQLException {
-        String query = "SELECT * FROM utente WHERE email = ?";
+    public boolean checkRegister(String email, String username) throws SQLException {
+        String query = "SELECT * FROM utente WHERE email = ? or username = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, email);
+        statement.setString(2, username);
         ResultSet result = statement.executeQuery();
 
         return result.isBeforeFirst();
@@ -72,16 +73,17 @@ public class UserDAO {
      * @param password the password of the user.
      * @throws SQLException if an SQL exception occurs while accessing the database.
      */
-    public void addUser(String name, String surname, String email, String password) throws SQLException {
-        String query = "INSERT INTO utente (nome, cognome, email, password) VALUES (?, ?, ?, ?)";
+    public void addUser(String username, String name, String surname, String email, String password) throws SQLException {
+        String query = "INSERT INTO utente (username, nome, cognome, email, password) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement preparedStatement = null;
 
         try {
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, surname);
-            preparedStatement.setString(3, email);
-            preparedStatement.setString(4, password);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, surname);
+            preparedStatement.setString(4, email);
+            preparedStatement.setString(5, password);
             preparedStatement.executeUpdate(); // Execute the insert query
         } finally {
             if (preparedStatement != null) {
@@ -91,7 +93,7 @@ public class UserDAO {
     }
 
     public List<User> getUsersFromGroup(int idgroup) throws SQLException {
-        String query = "select nome,cognome from partecipazione join utente on partecipazione.idpart = utente.id where idgruppo = ?";
+        String query = "select nome,cognome from partecipazione join utente on partecipazione.idpart = utente.username where idgruppo = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setInt(1, idgroup);
 
@@ -109,16 +111,17 @@ public class UserDAO {
         return users;
     }
 
-    public List<User> getAllUsers() throws SQLException {
-        String query = "select * from utente";
+    public List<User> getAllUsers(String username) throws SQLException {
+        String query = "select * from utente where username <> ? order by utente.cognome asc";
         PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, username);
 
         ResultSet resultSet = statement.executeQuery();
 
         List<User> users = new ArrayList<>();
         while (resultSet.next()) {
             User user = new User();
-            user.setId(resultSet.getInt("id"));
+            user.setUsername(resultSet.getString("username"));
             user.setName(resultSet.getString("nome"));
             user.setSurname(resultSet.getString("cognome"));
 

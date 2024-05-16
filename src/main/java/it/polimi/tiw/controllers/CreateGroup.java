@@ -109,9 +109,16 @@ public class CreateGroup extends HttpServlet {
             return;
         }
 
-        if (min_part <= 0 || min_part >= max_part) {
+        if (min_part >= max_part) {
             path = "/group.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti errato");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+
+        if (min_part < 2) {
+            path = "/group.html";
+            ctx.setVariable("errorMessage", "Errore: Almeno 2 partecipanti devono esserci");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }

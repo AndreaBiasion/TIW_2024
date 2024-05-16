@@ -20,6 +20,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet(name = "FetchDetails", value = "/fetchDetails")
@@ -85,7 +87,15 @@ public class FetchDetails extends HttpServlet {
                 return;
             }
 
+            // Define the desired date format (year, month, day)
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+            // Format the java.sql.Date object
+            String formattedDate = formatter.format(group.getDate_creation());
+
             ctx.setVariable("groupTitle", "Dettagli " + group.getTitle());
+            ctx.setVariable("creationDate", "Creato il " + formattedDate);
+            ctx.setVariable("durataAtt", "Durata attivita': " + group.getActivity_duration() + " giorni");
             ctx.setVariable("users", usersList);
             path = "/dettagli.html";
             templateEngine.process(path, ctx, response.getWriter());

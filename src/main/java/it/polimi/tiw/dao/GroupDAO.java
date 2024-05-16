@@ -16,7 +16,7 @@ public class GroupDAO {
     }
 
     // creates the group
-    public void createGroup(List<Integer> part_ids, Group group) throws SQLException {
+    public void createGroup(List<String> parts_usernames, Group group, String username_creatore) throws SQLException {
         String titolo = group.getTitle();
         int durata = group.getActivity_duration();
         int min_part = group.getMin_parts();
@@ -25,14 +25,15 @@ public class GroupDAO {
         java.util.Date utilDate = new java.util.Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 
-        String insertGroupQuery = "INSERT INTO gruppo (titolo, data_creazione, durata_att, min_part, max_part) VALUES (?, ?, ?, ?, ?)";
+        String insertGroupQuery = "INSERT INTO gruppo (username_creatore, titolo, data_creazione, durata_att, min_part, max_part) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertGroupQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, titolo);
-            preparedStatement.setDate(2, sqlDate);
-            preparedStatement.setInt(3, durata);
-            preparedStatement.setInt(4, min_part);
-            preparedStatement.setInt(5, max_part);
+            preparedStatement.setString(1, username_creatore);
+            preparedStatement.setString(2, titolo);
+            preparedStatement.setDate(3, sqlDate);
+            preparedStatement.setInt(4, durata);
+            preparedStatement.setInt(5, min_part);
+            preparedStatement.setInt(6, max_part);
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
@@ -51,8 +52,8 @@ public class GroupDAO {
         String insertParticipationQuery = "INSERT INTO partecipazione (idpart, idgruppo) VALUES (?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertParticipationQuery)) {
-            for (int partId : part_ids) {
-                preparedStatement.setInt(1, partId);
+            for (String partId : parts_usernames) {
+                preparedStatement.setString(1, partId);
                 preparedStatement.setInt(2, group.getId());
                 preparedStatement.executeUpdate();
             }
@@ -61,10 +62,10 @@ public class GroupDAO {
 
 
     // returns the groups associated with a user.id
-    public List<Group> getGroupsById(int id) throws SQLException {
+    public List<Group> getGroupsByUsername(String username) throws SQLException {
         String query = "SELECT id,titolo FROM partecipazione join gruppo on partecipazione.idgruppo = gruppo.id WHERE idpart = ?";
         PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, id);
+        statement.setString(1, username);
 
         ResultSet resultSet = statement.executeQuery();
 
@@ -79,6 +80,7 @@ public class GroupDAO {
 
         return groups;
     }
+    
 
     // returns the details of a specific group
     public Group getGroupById(int idgroup) throws SQLException {

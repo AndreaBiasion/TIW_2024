@@ -13,7 +13,7 @@
 
     <header>
         <h1>Home</h1>
-        <p th:text="${session.user.name + ' ' + session.user.surname}" class="username_welcome">NOME COGNOME</p>
+        <p th:text="${session.user.username}" class="username_welcome">USERNAME</p>
     </header>
 
 
@@ -40,8 +40,8 @@
 
     </div>
 
-    <p><a class="create_btn" th:href="@{/createGroup}">Crea gruppo</a></p>
-    <p><a class="logout_btn" href="logout">Logout</a></p>
+    <a class="create_btn"  th:href="@{/createGroup}">Crea gruppo</a>
+    <a class="logout_btn" th:href="@{/logout}" >Logout</a>
 
 </body>
 </html>

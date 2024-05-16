@@ -57,7 +57,7 @@ public class GoToHome extends HttpServlet {
 
         try {
 
-            List<Group> groups = groupDAO.getGroupsById(user.getId());
+            List<Group> groups = groupDAO.getGroupsByUsername(user.getUsername());
 
             if(groups.isEmpty()) {
                 ctx.setVariable("noGroupsMessage", "Nessun gruppo trovato");
