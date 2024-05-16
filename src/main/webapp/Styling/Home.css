@@ -43,9 +43,6 @@ header{
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.create_btn > a {
     text-decoration: none;
     color: white;
 }
@@ -66,9 +63,6 @@ header{
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.logout_btn > a {
     text-decoration: none;
     color: white;
 }
