@@ -59,6 +59,7 @@ public class GoToAnag extends HttpServlet {
         UserDAO userDAO = new UserDAO(connection);
 
         String errorMessage = (String) session.getAttribute("errorMessage");
+
         if (errorMessage != null) {
             ctx.setVariable("errorMessage", errorMessage);
         }
@@ -79,7 +80,11 @@ public class GoToAnag extends HttpServlet {
 
 
         try {
-            ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + g.getMax_parts() + " utenti");
+            if( g.getMin_parts() == g.getMax_parts() ) {
+                ctx.setVariable("anagTableTitle", "Devi invitare " + g.getMax_parts() + " utenti");
+            } else {
+                ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + g.getMax_parts() + " utenti");
+            }
         } catch (NumberFormatException e) {
             path = "/anagrafica.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
@@ -166,6 +171,7 @@ public class GoToAnag extends HttpServlet {
         if (selectedCount < g.getMin_parts() || selectedCount > g.getMax_parts()) {
             path = "/cancellazione.html";
             request.getSession().setAttribute("errorCount", 0);
+            request.getSession().setAttribute("errorMessage", null);
             templateEngine.process(path, ctx, response.getWriter());
         }
 

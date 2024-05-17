@@ -93,7 +93,7 @@ public class FetchDetails extends HttpServlet {
             // Format the java.sql.Date object
             String formattedDate = formatter.format(group.getDate_creation());
 
-            ctx.setVariable("groupTitle", "Dettagli " + group.getTitle());
+            ctx.setVariable("groupTitle", group.getTitle());
             ctx.setVariable("creationDate", "Creato il " + formattedDate);
             ctx.setVariable("durataAtt", "Durata attivita': " + group.getActivity_duration() + " giorni");
             ctx.setVariable("users", usersList);

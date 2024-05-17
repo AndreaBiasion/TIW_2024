@@ -11,29 +11,35 @@
 </head>
 <body>
 
-<div class="container">
+    <header>
+        <h1>Dettagli</h1>
+    </header>
 
-    <h1 style="margin-top: 60px" th:text="${groupTitle}" th:id="group_name"></h1>
+    <div class="container">
 
-    <p th:text="${creationDate}"></p>
-    <p th:text="${durataAtt}"></p>
 
-    <table class="table table-bordered ">
-        <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Cognome</th>
-        </tr>
-        </thead>
-        <tbody th:remove="all-but-first">
-        <tr th:each="user : ${users}">
-            <td th:text="${user.name}"></td>
-            <td th:text="${user.surname}"></td>
-        </tr>
-        </tbody>
-    </table>
 
-</div>
+        <h1 style="margin-top: 60px" th:text="${groupTitle}" th:id="group_name"></h1>
+
+        <p th:text="${creationDate}"></p>
+        <p th:text="${durataAtt}"></p>
+
+        <table class="table table-bordered ">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Cognome</th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="user : ${users}">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.surname}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
 
 
 </body>

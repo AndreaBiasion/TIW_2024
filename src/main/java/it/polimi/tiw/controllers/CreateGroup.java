@@ -109,7 +109,7 @@ public class CreateGroup extends HttpServlet {
             return;
         }
 
-        if (min_part >= max_part) {
+        if (min_part > max_part) {
             path = "/group.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti errato");
             templateEngine.process(path, ctx, response.getWriter());
