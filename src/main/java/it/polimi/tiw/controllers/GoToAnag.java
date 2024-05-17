@@ -60,6 +60,14 @@ public class GoToAnag extends HttpServlet {
 
         String errorMessage = (String) session.getAttribute("errorMessage");
 
+        // Recupera la selezione precedente dalla sessione
+        List<String> selectedUsers = (List<String>) session.getAttribute("selectedUsers");
+        System.out.println("Selected users: " + selectedUsers);
+
+        if (selectedUsers != null) {
+            ctx.setVariable("selectedUsers", selectedUsers);
+        }
+
         if (errorMessage != null) {
             ctx.setVariable("errorMessage", errorMessage);
         }
@@ -127,31 +135,33 @@ public class GoToAnag extends HttpServlet {
         }
 
 
-        System.out.println("Selected: " + selectedCount);
+        // System.out.println("Selected: " + selectedCount);
 
         while (errorCount < 2) {
 
             if(selectedCount < g.getMin_parts()) {
                 errorCount++;
-                System.out.println(errorCount);
+                // System.out.println(errorCount);
                 int delta = g.getMin_parts() - selectedCount;
                 request.getSession().setAttribute("errorMessage", "Troppi pochi utenti selezionati, aggiungerne almeno " + delta);
+                request.getSession().setAttribute("selectedUsers", usernames);
             }
 
             if(selectedCount > g.getMax_parts()) {
                 errorCount++;
-                System.out.println(errorCount);
+                // System.out.println(errorCount);
                 int delta = selectedCount - g.getMax_parts();
                 request.getSession().setAttribute("errorMessage", "Troppi utenti selezionati, eliminarne almeno " + delta);
+                request.getSession().setAttribute("selectedUsers", usernames);
             }
 
             if(selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
-                System.out.println("Gruppo in fase di creazione");
+                // System.out.println("Gruppo in fase di creazione");
                 GroupDAO groupDAO = new GroupDAO(connection);
                 try {
                     usernames.add(user.getUsername());
                     groupDAO.createGroup(usernames, g, user.getUsername());
-                    System.out.println("Gruppo creato con successo");
+                    // System.out.println("Gruppo creato con successo");
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -172,20 +182,24 @@ public class GoToAnag extends HttpServlet {
             path = "/cancellazione.html";
             request.getSession().setAttribute("errorCount", 0);
             request.getSession().setAttribute("errorMessage", null);
+            request.getSession().setAttribute("selectedUsers", null);
             templateEngine.process(path, ctx, response.getWriter());
         }
 
         if(selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
-            System.out.println("Gruppo in fase di creazione");
+            // System.out.println("Gruppo in fase di creazione");
             GroupDAO groupDAO = new GroupDAO(connection);
             try {
                 usernames.add(user.getUsername());
                 groupDAO.createGroup(usernames, g, user.getUsername());
-                System.out.println("Gruppo creato con successo");
+                // System.out.println("Gruppo creato con successo");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
 
+            request.getSession().setAttribute("errorCount", 0);
+            request.getSession().setAttribute("errorMessage", null);
+            request.getSession().setAttribute("selectedUsers", null);
             path = request.getContextPath() + "/goToHome";
             response.sendRedirect(path);
             return;

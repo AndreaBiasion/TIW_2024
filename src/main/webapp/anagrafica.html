@@ -30,8 +30,11 @@
             <tbody th:remove="all-but-first">
             <tr th:each="user : ${users}">
                 <td>
-                    <input class="form-check-input" type="checkbox" name="selectedUsers" th:value="${user.username}" th:id="'flexCheckDefault' + ${user.username}">
-                    <label class="form-check-label" th:for="'flexCheckDefault' + ${user.username}" th:text="${user.name} + ' ' + ${user.surname}"></label>
+                    <input class="form-check-input" type="checkbox" name="selectedUsers"
+                           th:value="${user.username}" th:id="'flexCheckDefault' + ${user.username}"
+                           th:checked="${selectedUsers != null and #lists.contains(selectedUsers, user.username)}">
+                    <label class="form-check-label" th:for="'flexCheckDefault' + ${user.username}"
+                           th:text="${user.name} + ' ' + ${user.surname}"></label>
                 </td>
             </tr>
             </tbody>
