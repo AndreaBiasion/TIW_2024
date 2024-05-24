@@ -116,7 +116,7 @@ public class CreateGroup extends HttpServlet {
             return;
         }
 
-        if (min_part < 2) {
+        if (min_part < 1) {
             path = "/group.html";
             ctx.setVariable("errorMessage", "Errore: Almeno 2 partecipanti devono esserci");
             templateEngine.process(path, ctx, response.getWriter());
