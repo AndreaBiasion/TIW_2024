@@ -21,9 +21,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Servlet implementation class FetchDetails
+ * Handles requests to fetch details of a specific group and displays them on a details page.
+ */
 @WebServlet(name = "FetchDetails", value = "/fetchDetails")
 public class FetchDetails extends HttpServlet {
 
@@ -31,11 +34,19 @@ public class FetchDetails extends HttpServlet {
     private Connection connection = null;
     private TemplateEngine templateEngine;
 
-
+    /**
+     * @see HttpServlet#HttpServlet()
+     * Default constructor.
+     */
     public FetchDetails() {
         super();
     }
 
+    /**
+     * Initializes the servlet, setting up the database connection and the Thymeleaf template engine.
+     *
+     * @throws ServletException if an initialization error occurs
+     */
     @Override
     public void init() throws ServletException {
         connection = ConnectionManager.getConnection(getServletContext());
@@ -47,6 +58,15 @@ public class FetchDetails extends HttpServlet {
         templateResolver.setSuffix(".html");
     }
 
+    /**
+     * Handles GET requests to fetch details of a specific group.
+     * Validates the group ID, retrieves group details and participants, and displays them on the details page.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client has made to the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet sends to the client
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -67,21 +87,18 @@ public class FetchDetails extends HttpServlet {
         GroupDAO groupDAO = new GroupDAO(connection);
         UserDAO userDAO = new UserDAO(connection);
 
-        // templateEngine.process(path, ctx, response.getWriter());
-
         try {
-
-            // retrieves group by id
+            // Retrieves group by ID
             Group group = groupDAO.getGroupById(IDGroup);
 
-            // retrieves user from the session
+            // Retrieves user from the session
             User user = (User) session.getAttribute("user");
 
-            // list of partecipants
+            // List of participants
             List<User> usersList = userDAO.getUsersFromGroup(IDGroup);
 
-            // If the specified account isn't owned by the current users, redirects to the homepage
-            if(group == null){
+            // If the specified group isn't found, redirects to the homepage
+            if (group == null) {
                 path = request.getContextPath() + "/goToHome";
                 response.sendRedirect(path);
                 return;
@@ -105,17 +122,27 @@ public class FetchDetails extends HttpServlet {
         }
     }
 
+    /**
+     * Handles POST requests by delegating to the doGet method.
+     *
+     * @param req  the HttpServletRequest object that contains the request the client has made to the servlet
+     * @param resp the HttpServletResponse object that contains the response the servlet sends to the client
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        doGet(req, resp);
     }
 
-
+    /**
+     * Closes the database connection when the servlet is destroyed.
+     */
     @Override
     public void destroy() {
-        try{
+        try {
             ConnectionManager.closeConnection(connection);
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
