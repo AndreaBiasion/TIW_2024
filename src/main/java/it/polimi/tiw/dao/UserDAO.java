@@ -1,14 +1,13 @@
 package it.polimi.tiw.dao;
 
-import it.polimi.tiw.beans.Group;
-import it.polimi.tiw.beans.User;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.polimi.tiw.beans.*;
 
 /**
  * This class handles data access operations related to users.
@@ -34,33 +33,76 @@ public class UserDAO {
      */
     public User checkCredentials(String email, String password) throws SQLException {
         String query = "SELECT * FROM utente WHERE email = ? AND password = ?";
+        PreparedStatement pstatement = null;
+        ResultSet result = null;
 
-        try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+        try {
+            pstatement = connection.prepareStatement(query);
             pstatement.setString(1, email);
             pstatement.setString(2, password);
-            try (ResultSet result = pstatement.executeQuery();) {
-                if (!result.isBeforeFirst()) // no results, credential check failed
-                    return null;
-                else {
-                    result.next();
-                    User user = new User();
-                    user.setUsername(result.getString("username"));
-                    user.setName(result.getString("nome"));
-                    user.setSurname(result.getString("cognome"));
-                    user.setEmail(email);
-                    user.setPassword(password);
-                    return user;
+
+            result = pstatement.executeQuery();
+            if (!result.isBeforeFirst()) // no results, credential check failed
+                return null;
+            else {
+                result.next();
+                User user = new User();
+                user.setUsername(result.getString("username"));
+                user.setName(result.getString("nome"));
+                user.setSurname(result.getString("cognome"));
+                user.setEmail(email);
+                user.setPassword(password);
+                return user;
+            }
+        } catch (SQLException e) {
+            throw new SQLException();
+
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
                 }
+            }catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+            }catch (Exception e2) {
+                throw new SQLException(e2);
             }
         }
     }
 
     public boolean checkRegister(String email, String username) throws SQLException {
         String query = "SELECT * FROM utente WHERE email = ? or username = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, email);
-        statement.setString(2, username);
-        ResultSet result = statement.executeQuery();
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, username);
+            result = statement.executeQuery();
+        } catch (SQLException e) {
+            throw new SQLException();
+
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+            }catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            }catch (Exception e2) {
+                throw new SQLException(e2);
+            }
+        }
 
         return result.isBeforeFirst();
     }
@@ -85,51 +127,99 @@ public class UserDAO {
             preparedStatement.setString(4, email);
             preparedStatement.setString(5, password);
             preparedStatement.executeUpdate(); // Execute the insert query
+        } catch (SQLException e){
+            throw new SQLException(e);
+
         } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            }catch (Exception e2) {
+                throw new SQLException(e2);
             }
         }
     }
-
+    /**
+     * Find the users of the group
+     * @param idgroup
+     * @return all the users of the group
+     * @throws SQLException
+     */
     public List<User> getUsersFromGroup(int idgroup) throws SQLException {
-        String query = "select nome,cognome from partecipazione join utente on partecipazione.idpart = utente.username where idgruppo = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, idgroup);
-
-        ResultSet resultSet = statement.executeQuery();
-
         List<User> users = new ArrayList<>();
-        while (resultSet.next()) {
-            User user = new User();
-            user.setName(resultSet.getString("nome"));
-            user.setSurname(resultSet.getString("cognome"));
+        String query = "select nome,cognome from partecipazione join utente on partecipazione.idpart = utente.username where idgruppo = ?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, idgroup);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                User user = new User();
+                user.setName(resultSet.getString("nome"));
+                user.setSurname(resultSet.getString("cognome"));
+                users.add(user);
+            }
+        }  catch (SQLException e) {
+            throw new SQLException();
 
-            users.add(user);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            }catch (Exception e1) {
+                throw new SQLException(e1);
+            }
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            }catch (Exception e2) {
+                throw new SQLException(e2);
+            }
         }
 
         return users;
     }
-
+    /**
+     * list of all users order by decreasing surname
+     * @param username
+     * @return the list of all users order by decreasing surname
+     * @throws SQLException
+     */
     public List<User> getAllUsers(String username) throws SQLException {
         String query = "select * from utente where username <> ? order by utente.cognome asc";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, username);
-
-        ResultSet resultSet = statement.executeQuery();
-
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         List<User> users = new ArrayList<>();
-        while (resultSet.next()) {
-            User user = new User();
-            user.setUsername(resultSet.getString("username"));
-            user.setName(resultSet.getString("nome"));
-            user.setSurname(resultSet.getString("cognome"));
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                User user = new User();
+                user.setUsername(resultSet.getString("username"));
+                user.setName(resultSet.getString("nome"));
+                user.setSurname(resultSet.getString("cognome"));
+                users.add(user);
+            }
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }finally {
+            try{
+                resultSet.close();
+            }catch (Exception e1){
+                throw new SQLException("cannot close result");
+            }
+            try{
+                statement.close();
+            }catch (Exception e2){
+                throw new SQLException("cannot close statement");
+            }
 
-            users.add(user);
         }
-
         return users;
     }
-
-
 }
