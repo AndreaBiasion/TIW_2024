@@ -21,6 +21,12 @@
     <h1>Utenti registrati</h1>
 
     <form action="goToAnag" method="post">
+
+        <input type="hidden" name="title" th:value="${param.title}" />
+        <input type="hidden" name="durata" th:value="${param.durata}" />
+        <input type="hidden" name="min_part" th:value="${param.min_part}" />
+        <input type="hidden" name="max_part" th:value="${param.max_part}" />
+
         <table class="table table-bordered ">
             <thead>
             <tr>
@@ -42,6 +48,7 @@
             <p th:text="${errorMessage}"></p>
         </table>
         <button type="submit" class="btn btn-primary">Invita</button>
+
     </form>
 
     <p th:text="${selectedCount}"></p>

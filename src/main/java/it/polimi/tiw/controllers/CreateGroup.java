@@ -51,7 +51,6 @@ public class CreateGroup extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         String path = "/group.html";
         ServletContext context = getServletContext();
         final WebContext ctx = new WebContext(request,response,context,request.getLocale());
@@ -123,13 +122,11 @@ public class CreateGroup extends HttpServlet {
             return;
         }
 
-        path = getServletContext().getContextPath() + "/goToAnag";
-        Group group = new Group();
-        group.setTitle(title);
-        group.setActivity_duration(durata);
-        group.setMin_parts(min_part);
-        group.setMax_parts(max_part);
-        request.getSession().setAttribute("group", group);
+
+        path = getServletContext().getContextPath() + "/goToAnag?title=" + title +
+                "&durata=" + durata +
+                "&min_part=" + min_part +
+                "&max_part=" + max_part;
         response.sendRedirect(path);
 
     }

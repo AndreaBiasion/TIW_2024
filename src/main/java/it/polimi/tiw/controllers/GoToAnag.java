@@ -70,7 +70,18 @@ public class GoToAnag extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        Group g = (Group) session.getAttribute("group");
+        String title = request.getParameter("title");
+        int durata = Integer.parseInt(request.getParameter("durata"));
+        int min_part = Integer.parseInt(request.getParameter("min_part"));
+        int max_part = Integer.parseInt(request.getParameter("max_part"));
+
+        Group g = new Group();
+        g.setTitle(title);
+        g.setActivity_duration(durata);
+        g.setMin_parts(min_part);
+        g.setMax_parts(max_part);
+
+
         String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
         WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -134,12 +145,23 @@ public class GoToAnag extends HttpServlet {
         HttpSession session = request.getSession();
 
         User user = (User) session.getAttribute("user");
-        Group g = (Group) session.getAttribute("group");
+
+        String title = request.getParameter("title");
+        int durata = Integer.parseInt(request.getParameter("durata"));
+        int min_part = Integer.parseInt(request.getParameter("min_part"));
+        int max_part = Integer.parseInt(request.getParameter("max_part"));
+
+        Group g = new Group();
+        g.setTitle(title);
+        g.setActivity_duration(durata);
+        g.setMin_parts(min_part);
+        g.setMax_parts(max_part);
 
         Integer errorCount = (Integer) session.getAttribute("errorCount");
         if (errorCount == null) {
             errorCount = 0;
         }
+
 
         String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
@@ -158,14 +180,14 @@ public class GoToAnag extends HttpServlet {
         while (errorCount < 2) {
             if (selectedCount < g.getMin_parts()) {
                 errorCount++;
-                int delta = g.getMin_parts() - selectedCount;
+                int delta = min_part - selectedCount;
                 request.getSession().setAttribute("errorMessage", "Troppi pochi utenti selezionati, aggiungerne almeno " + delta);
                 request.getSession().setAttribute("selectedUsers", usernames);
             }
 
             if (selectedCount > g.getMax_parts()) {
                 errorCount++;
-                int delta = selectedCount - g.getMax_parts();
+                int delta = selectedCount - max_part;
                 request.getSession().setAttribute("errorMessage", "Troppi utenti selezionati, eliminarne almeno " + delta);
                 request.getSession().setAttribute("selectedUsers", usernames);
             }
@@ -173,6 +195,7 @@ public class GoToAnag extends HttpServlet {
             if (selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
                 GroupDAO groupDAO = new GroupDAO(connection);
                 try {
+
                     usernames.add(user.getUsername());
                     groupDAO.createGroup(usernames, g, user.getUsername());
                 } catch (SQLException e) {
@@ -184,7 +207,10 @@ public class GoToAnag extends HttpServlet {
                 return;
             }
 
-            path = request.getContextPath() + "/goToAnag";
+            path = getServletContext().getContextPath() + "/goToAnag?title=" + title +
+                    "&durata=" + durata +
+                    "&min_part=" + min_part +
+                    "&max_part=" + max_part;
             request.getSession().setAttribute("errorCount", errorCount);
             response.sendRedirect(path);
             return;
@@ -192,9 +218,9 @@ public class GoToAnag extends HttpServlet {
 
         if (selectedCount < g.getMin_parts() || selectedCount > g.getMax_parts()) {
             path = "/cancellazione.html";
-            request.getSession().setAttribute("errorCount", 0);
-            request.getSession().setAttribute("errorMessage", null);
-            request.getSession().setAttribute("selectedUsers", null);
+            request.getSession().removeAttribute("errorCount");
+            request.getSession().removeAttribute("errorMessage");
+            request.getSession().removeAttribute("selectedUsers");
             templateEngine.process(path, ctx, response.getWriter());
         }
 
@@ -207,9 +233,9 @@ public class GoToAnag extends HttpServlet {
                 throw new RuntimeException(e);
             }
 
-            request.getSession().setAttribute("errorCount", 0);
-            request.getSession().setAttribute("errorMessage", null);
-            request.getSession().setAttribute("selectedUsers", null);
+            request.getSession().removeAttribute("errorCount");
+            request.getSession().removeAttribute("errorMessage");
+            request.getSession().removeAttribute("selectedUsers");
             path = request.getContextPath() + "/goToHome";
             response.sendRedirect(path);
             return;

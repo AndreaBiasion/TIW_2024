@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Servlet implementation class FetchDetails
@@ -97,8 +98,16 @@ public class FetchDetails extends HttpServlet {
             // List of participants
             List<User> usersList = userDAO.getUsersFromGroup(IDGroup);
 
+            boolean check = usersList.stream()
+                    .map(User::getUsername)
+                    .anyMatch(username -> username.equals(user.getUsername()));
+
+            System.out.println(check);
+
+
+
             // If the specified group isn't found, redirects to the homepage
-            if (group == null) {
+            if (group == null || !check) {
                 path = request.getContextPath() + "/goToHome";
                 response.sendRedirect(path);
                 return;
