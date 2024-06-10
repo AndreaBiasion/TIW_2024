@@ -68,67 +68,7 @@ public class GoToAnag extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-
-        String title = request.getParameter("title");
-        int durata = Integer.parseInt(request.getParameter("durata"));
-        int min_part = Integer.parseInt(request.getParameter("min_part"));
-        int max_part = Integer.parseInt(request.getParameter("max_part"));
-
-        Group g = new Group();
-        g.setTitle(title);
-        g.setActivity_duration(durata);
-        g.setMin_parts(min_part);
-        g.setMax_parts(max_part);
-
-
-        String path = "/anagrafica.html";
-        ServletContext servletContext = getServletContext();
-        WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-
-        User user = (User) session.getAttribute("user");
-        UserDAO userDAO = new UserDAO(connection);
-
-        String errorMessage = (String) session.getAttribute("errorMessage");
-
-        // Retrieve previous selection from the session
-        List<String> selectedUsers = (List<String>) session.getAttribute("selectedUsers");
-        System.out.println("Selected users: " + selectedUsers);
-
-        if (selectedUsers != null) {
-            ctx.setVariable("selectedUsers", selectedUsers);
-        }
-
-        if (errorMessage != null) {
-            ctx.setVariable("errorMessage", errorMessage);
-        }
-
-        try {
-            List<User> users = userDAO.getAllUsers(user.getUsername());
-
-            if (users.isEmpty()) {
-                ctx.setVariable("noUsersMessage", "Nessun utente trovato");
-            } else {
-                ctx.setVariable("users", users);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            if (g.getMin_parts() == g.getMax_parts()) {
-                ctx.setVariable("anagTableTitle", "Devi invitare " + g.getMax_parts() + " utenti");
-            } else {
-                ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + g.getMax_parts() + " utenti");
-            }
-        } catch (NumberFormatException e) {
-            path = "/anagrafica.html";
-            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
-            templateEngine.process(path, ctx, response.getWriter());
-            return;
-        }
-
-        templateEngine.process(path, ctx, response.getWriter());
+        doPost(request, response);
     }
 
     /**
