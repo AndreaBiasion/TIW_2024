@@ -17,10 +17,8 @@
     </header>
 
     <div class="btn_container">
-        <a class="create_btn"  th:href="@{/createGroup}">Crea gruppo</a>
         <a class="logout_btn" th:href="@{/logout}" >Logout</a>
     </div>
-
 
     <div class="container">
 
@@ -62,6 +60,28 @@
             <p th:text="${noGroupsInvitedMessage}"></p>
         </table>
 
+    </div>
+
+
+    <div class="form_container">
+        <h2 style="font-size: 20px">Crea un gruppo</h2>
+        <form action="createGroup" method="post" style="margin-top: 50px; font-size: 15px">
+            <div class="form-group">
+                <input placeholder="Titolo" type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <input placeholder="Durata Attivita'" type="number" id="durata_att" name="durata_att" required min="0">
+            </div>
+            <div class="form-group">
+                <input placeholder="Min invitati" type="number" id="min_part" name="min_part" required min="0">
+            </div>
+            <div class="form-group">
+                <input placeholder="Max invitati" type="number" id="max_part" name="max_part" required min="0">
+            </div>
+
+            <p id="errorMessage" style="color: red;"></p>
+        </form>
+        <button type="submit" id="createGroupBtn">Crea gruppo</button>
     </div>
 
 

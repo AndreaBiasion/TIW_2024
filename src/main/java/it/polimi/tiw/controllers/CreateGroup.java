@@ -51,12 +51,8 @@ public class CreateGroup extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String path = "/group.html";
-        ServletContext context = getServletContext();
-        final WebContext ctx = new WebContext(request,response,context,request.getLocale());
-
-        templateEngine.process(path, ctx, response.getWriter());
-
+        String path = getServletContext().getContextPath() + "/goToHome";
+        response.sendRedirect(path);
     }
 
     /**
@@ -101,27 +97,12 @@ public class CreateGroup extends HttpServlet {
 
         int durata = Integer.parseInt(durataStr);
 
-        if(durata <= 0) {
-            path = "/group.html";
-            ctx.setVariable("errorMessage", "Errore: Numero di giorni errato");
-            templateEngine.process(path, ctx, response.getWriter());
-            return;
-        }
-
         if (min_part > max_part) {
-            path = "/group.html";
+            path = "/home.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti errato");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
-
-        if (min_part < 1) {
-            path = "/group.html";
-            ctx.setVariable("errorMessage", "Errore: Almeno 2 partecipanti devono esserci");
-            templateEngine.process(path, ctx, response.getWriter());
-            return;
-        }
-
 
         path = getServletContext().getContextPath() + "/goToAnag?title=" + title +
                 "&durata=" + durata +
