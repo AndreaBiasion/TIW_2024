@@ -81,6 +81,9 @@ public class GoToAnag extends HttpServlet {
         g.setMin_parts(min_part);
         g.setMax_parts(max_part);
 
+        min_part--;
+        max_part--;
+
 
         String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
@@ -117,9 +120,9 @@ public class GoToAnag extends HttpServlet {
 
         try {
             if (g.getMin_parts() == g.getMax_parts()) {
-                ctx.setVariable("anagTableTitle", "Devi invitare " + g.getMax_parts() + " utenti");
+                ctx.setVariable("anagTableTitle", "Devi invitare " + max_part + " utenti");
             } else {
-                ctx.setVariable("anagTableTitle", "Puoi invitare fino a " + g.getMax_parts() + " utenti");
+                ctx.setVariable("anagTableTitle", "Puoi invitare da " + min_part + " a " + max_part + " utenti");
             }
         } catch (NumberFormatException e) {
             path = "/anagrafica.html";
@@ -157,6 +160,10 @@ public class GoToAnag extends HttpServlet {
         g.setMin_parts(min_part);
         g.setMax_parts(max_part);
 
+        // escludo il creatore del gruppo
+        min_part--;
+        max_part--;
+
         Integer errorCount = (Integer) session.getAttribute("errorCount");
         if (errorCount == null) {
             errorCount = 0;
@@ -178,21 +185,21 @@ public class GoToAnag extends HttpServlet {
         }
 
         while (errorCount < 2) {
-            if (selectedCount < g.getMin_parts()) {
+            if (selectedCount < min_part) {
                 errorCount++;
                 int delta = min_part - selectedCount;
                 request.getSession().setAttribute("errorMessage", "Troppi pochi utenti selezionati, aggiungerne almeno " + delta);
                 request.getSession().setAttribute("selectedUsers", usernames);
             }
 
-            if (selectedCount > g.getMax_parts()) {
+            if (selectedCount > max_part) {
                 errorCount++;
                 int delta = selectedCount - max_part;
                 request.getSession().setAttribute("errorMessage", "Troppi utenti selezionati, eliminarne almeno " + delta);
                 request.getSession().setAttribute("selectedUsers", usernames);
             }
 
-            if (selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
+            if (selectedCount >= min_part && selectedCount <= max_part) {
                 GroupDAO groupDAO = new GroupDAO(connection);
                 try {
 
@@ -209,14 +216,14 @@ public class GoToAnag extends HttpServlet {
 
             path = getServletContext().getContextPath() + "/goToAnag?title=" + title +
                     "&durata=" + durata +
-                    "&min_part=" + min_part +
-                    "&max_part=" + max_part;
+                    "&min_part=" + g.getMin_parts() +
+                    "&max_part=" + g.getMax_parts();
             request.getSession().setAttribute("errorCount", errorCount);
             response.sendRedirect(path);
             return;
         }
 
-        if (selectedCount < g.getMin_parts() || selectedCount > g.getMax_parts()) {
+        if (selectedCount < min_part || selectedCount > max_part) {
             path = "/cancellazione.html";
             request.getSession().removeAttribute("errorCount");
             request.getSession().removeAttribute("errorMessage");
@@ -224,7 +231,7 @@ public class GoToAnag extends HttpServlet {
             templateEngine.process(path, ctx, response.getWriter());
         }
 
-        if (selectedCount >= g.getMin_parts() && selectedCount <= g.getMax_parts()) {
+        if (selectedCount >= min_part && selectedCount <= max_part) {
             GroupDAO groupDAO = new GroupDAO(connection);
             try {
                 usernames.add(user.getUsername());
