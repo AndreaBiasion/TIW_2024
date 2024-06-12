@@ -67,20 +67,16 @@
         <h1>Crea gruppo</h1>
         <form action="createGroup" method="post">
             <div class="form-group">
-                <label for="title">Titolo</label>
-                <input type="text" id="title" name="title" required>
+                <input placeholder="Titolo" type="text" id="title" name="title" required>
             </div>
             <div class="form-group">
-                <label for="durata_att">Durata Attivita' in giorni</label>
-                <input type="number" id="durata_att" name="durata_att" required>
+                <input placeholder="Durata Attivita'" type="number" id="durata_att" name="durata_att" required>
             </div>
             <div class="form-group">
-                <label for="min_part">Minimo invitati</label>
-                <input type="number" id="min_part" name="min_part" required>
+                <input placeholder="Min Partecipanti" type="number" id="min_part" name="min_part" required>
             </div>
             <div class="form-group">
-                <label for="max_part">Massimo invitati</label>
-                <input type="number" id="max_part" name="max_part" required>
+                <input placeholder="Max Partecipanti" type="number" id="max_part" name="max_part" required>
             </div>
 
             <p th:text="${errorMessage}" id="errorMessage" style="color: red;"></p>

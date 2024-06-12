@@ -99,8 +99,8 @@ public class GoToHome extends HttpServlet {
     /**
      * Handles POST requests by forwarding them to the doGet method.
      *
-     * @param req  the HttpServletRequest object that contains the request the client has made to the servlet
-     * @param resp the HttpServletResponse object that contains the response the servlet sends to the client
+     * @param request  the HttpServletRequest object that contains the request the client has made to the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet sends to the client
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException      if an input or output error is detected when the servlet handles the POST request
      */

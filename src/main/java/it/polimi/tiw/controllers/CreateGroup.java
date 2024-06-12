@@ -76,7 +76,7 @@ public class CreateGroup extends HttpServlet {
 
 
         if (title == null || title.isEmpty()) {
-            path = "/group.html";
+            path = "/home.html";
             ctx.setVariable("errorMessage", "Errore: Titolo mancante");
             templateEngine.process(path, ctx, response.getWriter());
             return;
@@ -89,13 +89,26 @@ public class CreateGroup extends HttpServlet {
             min_part = Integer.parseInt(minPartStr);
             max_part = Integer.parseInt(maxPartStr);
         } catch (NumberFormatException e) {
-            path = "/group.html";
+            path = "/home.html";
             ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
 
         int durata = Integer.parseInt(durataStr);
+
+        if(min_part < 1 || max_part < 1){
+            path = "/home.html";
+            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non validi");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
+        if(durata < 1){
+            path = "/home.html";
+            ctx.setVariable("errorMessage", "Errore: Durata non valida");
+            templateEngine.process(path, ctx, response.getWriter());
+            return;
+        }
 
         if (min_part > max_part) {
             path = "/home.html";
