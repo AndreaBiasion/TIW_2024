@@ -75,6 +75,16 @@ public class GoToAnag extends HttpServlet {
         int min_part = Integer.parseInt(request.getParameter("min_part"));
         int max_part = Integer.parseInt(request.getParameter("max_part"));
 
+        String path;
+
+
+        if(min_part < 0 || max_part < 0 || min_part > max_part || durata < 0 || title.isEmpty()) {
+            path = request.getContextPath() + "/goToHome";
+            response.sendRedirect(path);
+            return;
+        }
+
+
         Group g = new Group();
         g.setTitle(title);
         g.setActivity_duration(durata);
@@ -85,7 +95,8 @@ public class GoToAnag extends HttpServlet {
         max_part--;
 
 
-        String path = "/anagrafica.html";
+
+        path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
         WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 

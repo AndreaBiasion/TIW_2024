@@ -14,11 +14,9 @@
     <header>
         <h1>Home</h1>
         <p th:text="${session.user.username}" class="username_welcome">USERNAME</p>
+        <a class="logout_btn" th:href="@{/logout}" >Logout</a>
     </header>
 
-    <div class="btn_container">
-        <a class="logout_btn" th:href="@{/logout}" >Logout</a>
-    </div>
 
     <div class="container">
 
@@ -64,8 +62,8 @@
 
 
     <div class="form_container">
-        <h1>Crea gruppo</h1>
-        <form action="createGroup" method="post">
+        <h2 style="font-size: 20px">Crea gruppo</h2>
+        <form action="createGroup" method="post" style="margin-top: 50px; font-size: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center">
             <div class="form-group">
                 <input placeholder="Titolo" type="text" id="title" name="title" required>
             </div>
