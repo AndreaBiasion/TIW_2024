@@ -51,18 +51,15 @@ public class Register extends HttpServlet {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
-        message = "working!";
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String path = "/register.html";
         response.setContentType("text/html");
-
-        // Hello
-        PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>" + message + "</h1>");
-        out.println("</body></html>");
+        ServletContext servletContext = getServletContext();
+        final WebContext webContext = new WebContext(request, response, servletContext, request.getLocale());
+        templateEngine.process(path, webContext, response.getWriter());
     }
 
     /**

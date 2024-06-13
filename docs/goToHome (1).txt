@@ -1,0 +1,40 @@
+title goToHome
+
+activate goToHome
+[->goToHome: doGet()
+
+activate Session
+goToHome<-Session: user
+
+space 
+deactivate Session
+activate GroupDAO
+goToHome->GroupDAO: getGruopsByUsername()
+goToHome<- GroupDAO: groups
+space 
+deactivate GroupDAO
+alt groups.isEmpty()
+activate context
+goToHome->context: setVariable("noGroupsMessage", "Nessun gruppo trovato")
+space 
+deactivate context
+end
+space
+activate GroupDAO
+goToHome->GroupDAO: getGruopsByUsernameInvited()
+goToHome<- GroupDAO: groupsInvited
+space 
+deactivate GroupDAO
+
+alt groupsInvited.isEmpty()
+activate context
+goToHome->context: setVariable("noGroupsInvitedMessage", "Nessun gruppo trovato")
+end
+
+goToHome->context: setVariable("groups", groups)
+
+goToHome->context: setVariable("groupsInvited", groupsInvited)
+space 
+deactivate context
+activate home.html
+goToHome->home.html: templateEngine.process()

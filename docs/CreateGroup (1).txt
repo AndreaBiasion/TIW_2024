@@ -1,0 +1,27 @@
+title Event: Create Group
+
+
+participant [
+participant CreateGroup
+participant home.html
+
+participant GoToAnag
+
+activate CreateGroup
+
+note left of CreateGroup:POST/CrateGroup\ntitle -> title \ndurataStr -> durata_att \nmin_partStr -> min_part\nmax_partStr -> max_part
+[->CreateGroup: doPost()
+space 
+deactivate CreateGroup
+alt wrong parmeters:
+activate CreateGroup
+activate home.html
+CreateGroup-> home.html: templateEngine.proces()
+space 
+deactivate CreateGroup
+deactivate home.html
+end
+space 
+activate CreateGroup
+activate GoToAnag
+CreateGroup->GoToAnag: redirect\n/GoToAnag?\ntitle = title&\ndurata = durata&\nmin_num = min_numnumber&\nmax_num = max_num

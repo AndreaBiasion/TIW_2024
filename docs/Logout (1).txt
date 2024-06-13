@@ -1,0 +1,10 @@
+title Logout
+
+activate Logout
+[->Logout:doGet()
+activate Session
+Logout->Session: session.invalidate()
+space 
+deactivate Session
+activate login.html
+Logout->login.html: redirect

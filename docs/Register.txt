@@ -1,0 +1,42 @@
+title Register
+activate Register
+[->Register: doGet()
+activate register.html
+Register->register.html:templateEngine.process()
+space 
+deactivate register.html
+
+[->Register:doPost()
+note left of Register: POST/Regiter\nusername ->username\nemail->email\npassword->password\nrepassword->repassword\nname->name\nsurname->surname
+
+alt !password.equals(repassword)
+activate register.html
+Register->register.html:templateEngine.process()
+space 
+deactivate register.html
+end
+
+alt wrong parameters
+activate register.html
+Register->register.html: templateEngine.process()
+space 
+deactivate register.html
+end
+
+activate UserDAO
+Register->UserDAO: checkRegister()
+space 
+deactivate UserDAO
+alt isDuplicate
+activate context
+Register->context: setVariable("errorMessage", "L'email/username gia' in uso!")
+space 
+deactivate context
+else 
+activate UserDAO
+Register->UserDAO: addUser(username, name, surname, email, password)
+space 
+deactivate UserDAO
+end
+activate login.html
+Register->login.html: redirect

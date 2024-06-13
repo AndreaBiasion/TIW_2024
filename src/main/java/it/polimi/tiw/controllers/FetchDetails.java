@@ -104,8 +104,6 @@ public class FetchDetails extends HttpServlet {
 
             System.out.println(check);
 
-
-
             // If the specified group isn't found, redirects to the homepage
             if (group == null || !check) {
                 path = request.getContextPath() + "/goToHome";

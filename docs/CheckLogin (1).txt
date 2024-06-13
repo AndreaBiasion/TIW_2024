@@ -1,0 +1,49 @@
+title Event: Check login
+
+
+participant [
+participant CheckLogin
+participant UserDAO
+
+participant login.html
+participant /goToHome
+
+activate CheckLogin
+
+
+note left of CheckLogin:POST/CheckLogin\nemail->email\npassword->password
+[->CheckLogin: doPost()
+
+space 
+deactivate CheckLogin
+alt wrong parameter
+activate login.html
+activate CheckLogin
+CheckLogin->login.html: templateEngine.process()
+space 
+deactivate login.html
+deactivate CheckLogin
+end
+space 
+activate CheckLogin
+activate UserDAO
+CheckLogin->UserDAO: new UserDAO()
+UserDAO->CheckLogin: user
+space 
+deactivate CheckLogin
+deactivate UserDAO
+
+alt user == null
+
+activate CheckLogin
+activate login.html
+
+CheckLogin->login.html: templateEngine.process()
+space 
+deactivate CheckLogin
+deactivate login.html
+end
+
+activate CheckLogin
+activate /goToHome
+CheckLogin->/goToHome: response.sendRedirect()

@@ -1,0 +1,49 @@
+title Dettagli Gruppo
+
+activate ShowGroupDetail
+
+[->ShowGroupDetail: doGet()
+activate request
+ShowGroupDetail->request: getParameter("IDGroup")
+ShowGroupDetail<-request: IdGroup
+
+space 
+deactivate request
+activate GroupDAO
+ShowGroupDetail->GroupDAO: getGroupById(IDGroup)
+
+ShowGroupDetail<-GroupDAO: group
+space 
+deactivate GroupDAO
+alt group == null
+activate goTOHome
+ShowGroupDetail->goTOHome: redirect/goToHome
+space 
+deactivate goTOHome
+end
+activate UserDAO
+ShowGroupDetail->UserDAO: getUsersFromGroup(IDGroup)
+
+ShowGroupDetail<-UserDAO: usersList
+space 
+deactivate UserDAO
+activate Session
+ShowGroupDetail<-Session: user
+space 
+deactivate Session
+
+activate context
+
+ShowGroupDetail->context:   ctx.setVariable("groupTitle", group.getTitle())
+ShowGroupDetail->context:   ctx.setVariable("creationDate", "Creato il " + formattedDate)
+ ShowGroupDetail->context: ctx.setVariable("durataAtt", "Durata attivita': " + group.getActivity_duration() + " giorni");
+ShowGroupDetail->context: ctx.setVariable("users", usersList)
+space 
+deactivate context
+activate dettagli.html
+
+
+ShowGroupDetail->dettagli.html: templateEngine.process()
+space 
+deactivate dettagli.html
+

@@ -1,0 +1,155 @@
+title Event: Anagrafica
+
+participant [
+participant GoToAnag
+participant Session
+participant request
+
+participant context
+
+participant UserDAO
+
+participant GroupDAO
+
+participant anagrafica.html
+participant cancellazione.html
+
+activate GoToAnag
+[->GoToAnag:doGet()
+note left of GoToAnag:doGet()/Redirect\nfrom: createGroup
+activate Session
+GoToAnag<-Session:user
+GoToAnag<-Session: selectedUsers
+space 
+deactivate Session
+activate UserDAO
+GoToAnag->UserDAO: getAllUsers()
+GoToAnag<-UserDAO: List<User> users
+
+space 
+deactivate UserDAO
+alt users.isEmpty()
+
+activate context
+GoToAnag->context: setVariable("noUsersMessage", "Nessun utente trovato")
+
+end
+
+GoToAnag->context: setVariable("selectedUsers", selectedUsers)
+
+GoToAnag->context: setVariable("users", users)
+
+
+GoToAnag->context:setVariable("anagTableTitle", "Puoi invitare da " + min_part + " a " + max_part + " utenti")
+space 
+deactivate context
+activate anagrafica.html
+
+GoToAnag->anagrafica.html:templateEngine.process()
+
+space 
+deactivate anagrafica.html
+
+[->GoToAnag: doPost()
+
+note left of GoToAnag: POST/GoToAnag\ntitle -> title \ndurata -> durata \nmin_partStr -> min_part\nmax_partStr -> max_part
+
+activate Session
+
+GoToAnag<-Session: user
+
+GoToAnag->Session: errorCount = 0
+
+space 
+deactivate Session
+activate request
+
+GoToAnag->request: getParameterValues("selectedUsers")
+space 
+deactivate GoToAnag
+deactivate request
+
+loop errorCount < 2
+alt wrong parameters
+activate GoToAnag
+activate Session
+    GoToAnag->Session: setAttribute("errorCount", errorCount + 1)
+    GoToAnag->Session:setAttribute("selectedUsers", usernames)
+    GoToAnag->GoToAnag: redirect\n/goToAnag?\ntitle = title&\ndurata = durata&\nmin_num = min_numnumber&\nmax_num = max_num
+    
+    space 
+    deactivate GoToAnag
+    deactivate Session
+    
+end
+end
+
+alt selectedCount < min_part || selectedCount > max_part
+activate GoToAnag
+activate Session
+GoToAnag->Session: removeAttribute("errorCount")
+GoToAnag->Session: removeAttribute("selectedUsers")
+space 
+deactivate Session
+activate cancellazione.html
+GoToAnag->cancellazione.html: templeateEngine.process()
+space 
+deactivate GoToAnag
+deactivate cancellazione.html
+end
+
+alt selectedCount >= min_part && selectedCount <= max_part
+activate GoToAnag
+activate GroupDAO
+GoToAnag->GroupDAO: createGroup()
+space 
+deactivate GroupDAO
+activate Session
+GoToAnag->Session: removeAttribute("errorCount")
+GoToAnag->Session: removeAttribute("selectedUsers")
+space 
+deactivate Session
+activate GoToHome
+GoToAnag->GoToHome: redirect/goToHome
+space
+deactivate GoToAnag
+deactivate GoToHome
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

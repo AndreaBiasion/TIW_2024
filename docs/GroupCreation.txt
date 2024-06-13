@@ -1,9 +1,0 @@
-title Event: Group Creation
-
-
-activate CreateGroup
-activate GoToAnag
-
-note left of CreateGroup:POST/CrateGroup\ntitle -> t \ndate -> da \nduration -> du \nmin_number -> min_num\nmax_number -> max_num
-[->CreateGroup: doPost()
-CreateGroup->GoToAnag: redirect\n/GoToAnag\n?min_num = min_num\nmax_num = max_num
