@@ -90,10 +90,6 @@ public class GoToHome extends HttpServlet {
 
             ctx.setVariable("groups", groups);
             ctx.setVariable("groupsInvited", groupsInvited);
-            String errore = request.getParameter("errorMessage");
-            if (errore != null) {
-                ctx.setVariable("errorMessage", errore);
-            }
             templateEngine.process(path, ctx, response.getWriter());
         } catch (SQLException e) {
             throw new RuntimeException(e);
