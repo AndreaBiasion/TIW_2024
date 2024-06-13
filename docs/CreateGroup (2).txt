@@ -5,7 +5,10 @@ participant [
 participant CreateGroup
 participant home.html
 
+participant GoToHome
+
 participant GoToAnag
+
 
 activate CreateGroup
 
@@ -15,11 +18,12 @@ space
 deactivate CreateGroup
 alt wrong parmeters:
 activate CreateGroup
-activate home.html
-CreateGroup-> home.html: templateEngine.proces()
+activate GoToHome
+CreateGroup-> GoToHome: forward()
+
 space 
 deactivate CreateGroup
-deactivate home.html
+deactivate GoToHome
 end
 space 
 activate CreateGroup
