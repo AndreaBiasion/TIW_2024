@@ -61,7 +61,7 @@ public class CreateGroup extends HttpServlet {
      * @throws IOException      if an I/O error occurs while handling the request.
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String title = request.getParameter("title");
         String durataStr = request.getParameter("durata_att");
@@ -76,9 +76,9 @@ public class CreateGroup extends HttpServlet {
 
 
         if (title == null || title.isEmpty()) {
-            path = "/home.html";
-            ctx.setVariable("errorMessage", "Errore: Titolo mancante");
-            templateEngine.process(path, ctx, response.getWriter());
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Titolo non valido");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
@@ -89,31 +89,32 @@ public class CreateGroup extends HttpServlet {
             min_part = Integer.parseInt(minPartStr);
             max_part = Integer.parseInt(maxPartStr);
         } catch (NumberFormatException e) {
-            path = "/home.html";
-            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non valido");
-            templateEngine.process(path, ctx, response.getWriter());
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Numero di partecipanti non valido");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
         int durata = Integer.parseInt(durataStr);
 
         if(min_part < 1 || max_part < 1){
-            path = "/home.html";
-            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti non validi");
-            templateEngine.process(path, ctx, response.getWriter());
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Numero di partecipanti non valido");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
-        if(durata < 1){
-            path = "/home.html";
-            ctx.setVariable("errorMessage", "Errore: Durata non valida");
-            templateEngine.process(path, ctx, response.getWriter());
+        if (durata < 1) {
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Durata non valida");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
+
         if (min_part > max_part) {
-            path = "/home.html";
-            ctx.setVariable("errorMessage", "Errore: Numero di partecipanti errato");
-            templateEngine.process(path, ctx, response.getWriter());
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: minimo non puo' essere maggiore del massimo");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
