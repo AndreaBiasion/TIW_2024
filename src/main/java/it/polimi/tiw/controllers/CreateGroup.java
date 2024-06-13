@@ -69,11 +69,6 @@ public class CreateGroup extends HttpServlet {
         String maxPartStr = request.getParameter("max_part");
 
         String path;
-        ServletContext context = getServletContext();
-        final WebContext ctx = new WebContext(request, response, context, request.getLocale());
-
-
-
 
         if (title == null || title.isEmpty()) {
             path = "/goToHome";
