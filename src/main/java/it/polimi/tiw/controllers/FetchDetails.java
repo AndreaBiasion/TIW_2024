@@ -81,7 +81,8 @@ public class FetchDetails extends HttpServlet {
         try {
             IDGroup = Integer.parseInt(request.getParameter("IDGroup"));
         } catch (NumberFormatException | NullPointerException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "IDGroup mancante o vuoto");
+            path = request.getContextPath() + "/goToHome";
+            response.sendRedirect(path);
             return;
         }
 

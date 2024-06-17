@@ -71,14 +71,25 @@ public class GoToAnag extends HttpServlet {
         HttpSession session = request.getSession();
 
         String title = request.getParameter("title");
-        int durata = Integer.parseInt(request.getParameter("durata"));
-        int min_part = Integer.parseInt(request.getParameter("min_part"));
-        int max_part = Integer.parseInt(request.getParameter("max_part"));
+
+        int durata;
+        int min_part;
+        int max_part;
 
         String path;
 
 
-        if(min_part < 0 || max_part < 0 || min_part > max_part || durata < 0 || title.isEmpty()) {
+        try {
+            durata = Integer.parseInt(request.getParameter("durata"));
+            min_part = Integer.parseInt(request.getParameter("min_part"));
+            max_part = Integer.parseInt(request.getParameter("max_part"));
+        } catch (NumberFormatException e) {
+            path = request.getContextPath() + "/goToHome";
+            response.sendRedirect(path);
+            return;
+        }
+
+        if(min_part < 0 || max_part < 0 || min_part > max_part || durata < 0 || title.isEmpty() || title == null) {
             path = request.getContextPath() + "/goToHome";
             response.sendRedirect(path);
             return;
