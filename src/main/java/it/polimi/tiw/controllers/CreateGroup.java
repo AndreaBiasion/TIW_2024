@@ -79,18 +79,17 @@ public class CreateGroup extends HttpServlet {
 
         int min_part;
         int max_part;
-
+        int durata;
         try {
             min_part = Integer.parseInt(minPartStr);
             max_part = Integer.parseInt(maxPartStr);
+            durata = Integer.parseInt(durataStr);
         } catch (NumberFormatException e) {
             path = "/goToHome";
-            request.setAttribute("errorMessage", "Errore: Numero di partecipanti non valido");
+            request.setAttribute("errorMessage", "Errore: parametri non validi");
             request.getRequestDispatcher(path).forward(request, response);
             return;
         }
-
-        int durata = Integer.parseInt(durataStr);
 
         if(min_part < 1 || max_part < 1){
             path = "/goToHome";
@@ -104,7 +103,6 @@ public class CreateGroup extends HttpServlet {
             request.getRequestDispatcher(path).forward(request, response);
             return;
         }
-
 
         if (min_part > max_part) {
             path = "/goToHome";

@@ -84,14 +84,16 @@ public class GoToAnag extends HttpServlet {
             min_part = Integer.parseInt(request.getParameter("min_part"));
             max_part = Integer.parseInt(request.getParameter("max_part"));
         } catch (NumberFormatException e) {
-            path = request.getContextPath() + "/goToHome";
-            response.sendRedirect(path);
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Parametri scorretti");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
-        if(min_part < 0 || max_part < 0 || min_part > max_part || durata < 0 || title.isEmpty() || title == null) {
-            path = request.getContextPath() + "/goToHome";
-            response.sendRedirect(path);
+        if(min_part <=1 || min_part > max_part || durata < 0 || title.isEmpty() || title == null) {
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Parametri scorretti");
+            request.getRequestDispatcher(path).forward(request, response);
             return;
         }
 
@@ -171,10 +173,31 @@ public class GoToAnag extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
 
+        int durata;
+        int min_part;
+        int max_part;
+
         String title = request.getParameter("title");
-        int durata = Integer.parseInt(request.getParameter("durata"));
-        int min_part = Integer.parseInt(request.getParameter("min_part"));
-        int max_part = Integer.parseInt(request.getParameter("max_part"));
+
+        String path;
+
+        try {
+            durata = Integer.parseInt(request.getParameter("durata"));
+            min_part = Integer.parseInt(request.getParameter("min_part"));
+            max_part = Integer.parseInt(request.getParameter("max_part"));
+        }catch (NumberFormatException | NullPointerException e){
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Parametri scorretti");
+            request.getRequestDispatcher(path).forward(request, response);
+            return;
+        }
+
+        if(title == null || title.isEmpty()){
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Titolo nullo");
+            request.getRequestDispatcher(path).forward(request, response);
+            return;
+        }
 
         Group g = new Group();
         g.setTitle(title);
@@ -191,8 +214,6 @@ public class GoToAnag extends HttpServlet {
             errorCount = 0;
         }
 
-
-        String path = "/anagrafica.html";
         ServletContext servletContext = getServletContext();
         WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 
@@ -224,7 +245,6 @@ public class GoToAnag extends HttpServlet {
             if (selectedCount >= min_part && selectedCount <= max_part) {
                 GroupDAO groupDAO = new GroupDAO(connection);
                 try {
-
                     usernames.add(user.getUsername());
                     groupDAO.createGroup(usernames, g, user.getUsername());
                 } catch (SQLException e) {
