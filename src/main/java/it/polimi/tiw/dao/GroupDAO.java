@@ -16,6 +16,7 @@ public class GroupDAO {
     public GroupDAO(Connection connection) {
         this.connection = connection;
     }
+
     /**
      * Method to create a group
      * @param parts_usernames
@@ -24,7 +25,6 @@ public class GroupDAO {
      * @throws SQLException
      */
     public void createGroup(List<String> parts_usernames, Group group, String username_creatore) throws SQLException {
-
         String titolo = group.getTitle();
         int durata = group.getActivity_duration();
         int min_part = group.getMin_parts();
@@ -35,11 +35,15 @@ public class GroupDAO {
 
         PreparedStatement preparedStatement = null;
         ResultSet generatedKeys = null;
-        int affectedRows = 0;
 
         String insertGroupQuery = "INSERT INTO gruppo (username_creatore, titolo, data_creazione, durata_att, min_part, max_part) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertParticipationQuery = "INSERT INTO partecipazione (idpart, idgruppo) VALUES (?, ?)";
 
         try {
+            // Disattiva l'autocommit
+            connection.setAutoCommit(false);
+
+            // Inserisce il gruppo
             preparedStatement = connection.prepareStatement(insertGroupQuery, PreparedStatement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, username_creatore);
             preparedStatement.setString(2, titolo);
@@ -48,54 +52,68 @@ public class GroupDAO {
             preparedStatement.setInt(5, min_part);
             preparedStatement.setInt(6, max_part);
 
-            affectedRows = preparedStatement.executeUpdate();
+            int affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows == 0) {
                 throw new SQLException("Creating group failed, no rows affected.");
             }
 
-        } catch (SQLException e) {
-            throw new SQLException(e);
-        }
-
-        try {
+            // Ottiene l'ID generato
             generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 group.setId(generatedKeys.getInt(1));
             } else {
                 throw new SQLException("Creating group failed, no ID obtained.");
             }
-        } catch (SQLException e1){
-            throw new SQLException(e1);
-        }
 
-
-        String insertParticipationQuery = "INSERT INTO partecipazione (idpart, idgruppo) VALUES (?, ?)";
-
-        try {
+            // Inserisce le partecipazioni
             preparedStatement = connection.prepareStatement(insertParticipationQuery);
             for (String partId : parts_usernames) {
                 preparedStatement.setString(1, partId);
                 preparedStatement.setInt(2, group.getId());
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException e2) {
-            throw new SQLException(e2);
 
-        } finally {
-            try {
-                generatedKeys.close();
-            } catch (Exception e3) {
-                throw new SQLException("cannot close result");
+            // Esegue il commit della transazione
+            connection.commit();
+
+        } catch (SQLException e) {
+            // Esegue il rollback in caso di eccezione
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    throw new SQLException("Rollback failed: " + ex.getMessage(), ex);
+                }
             }
-            try {
-                preparedStatement.close();
-            } catch (Exception e3) {
-                throw new SQLException("cannot close prepared statement");
+            throw new SQLException(e);
+        } finally {
+            // Ripristina l'autocommit
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException ex) {
+                    throw new SQLException("Failed to reset auto-commit: " + ex.getMessage(), ex);
+                }
+            }
+            // Chiude le risorse
+            if (generatedKeys != null) {
+                try {
+                    generatedKeys.close();
+                } catch (Exception e) {
+                    throw new SQLException("Cannot close result set", e);
+                }
+            }
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (Exception e) {
+                    throw new SQLException("Cannot close prepared statement", e);
+                }
             }
         }
-
     }
+
 
     /**
      * Method to get the groups of a user
