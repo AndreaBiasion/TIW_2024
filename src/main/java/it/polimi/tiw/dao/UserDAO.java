@@ -147,7 +147,7 @@ public class UserDAO {
      */
     public List<User> getUsersFromGroup(int idgroup) throws SQLException {
         List<User> users = new ArrayList<>();
-        String query = "select nome,cognome,email,username, password from partecipazione join utente on partecipazione.idpart = utente.username where idgruppo = ?";
+        String query = "select nome,cognome,email,username, password from partecipazione join utente on partecipazione.idpart = utente.username where idgruppo = ? order by cognome";
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
