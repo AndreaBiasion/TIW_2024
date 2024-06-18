@@ -96,6 +96,24 @@ public class GoToAnag extends HttpServlet {
             request.getRequestDispatcher(path).forward(request, response);
             return;
         }
+        User user = (User) session.getAttribute("user");
+        UserDAO userDAO = new UserDAO(connection);
+
+        String username = user.getUsername();
+        List<User> users;
+
+        try {
+            users = userDAO.getAllUsers(username);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(min_part -1 > users.size()){
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Hai inserito un numero minimo troppo alto");
+            request.getRequestDispatcher(path).forward(request, response);
+            return;
+        }
 
 
         Group g = new Group();
@@ -113,8 +131,7 @@ public class GoToAnag extends HttpServlet {
         ServletContext servletContext = getServletContext();
         WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 
-        User user = (User) session.getAttribute("user");
-        UserDAO userDAO = new UserDAO(connection);
+
 
         String errorMessage = (String) session.getAttribute("errorMessage");
 
@@ -130,16 +147,10 @@ public class GoToAnag extends HttpServlet {
             ctx.setVariable("errorMessage", errorMessage);
         }
 
-        try {
-            List<User> users = userDAO.getAllUsers(user.getUsername());
-
-            if (users.isEmpty()) {
-                ctx.setVariable("noUsersMessage", "Nessun utente trovato");
-            } else {
-                ctx.setVariable("users", users);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (users.isEmpty()) {
+            ctx.setVariable("noUsersMessage", "Nessun utente trovato");
+        } else {
+            ctx.setVariable("users", users);
         }
 
         try {

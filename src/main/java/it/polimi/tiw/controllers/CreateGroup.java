@@ -1,6 +1,8 @@
 package it.polimi.tiw.controllers;
 
 import it.polimi.tiw.beans.Group;
+import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionManager;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(name = "createGroupServlet", value = "/createGroup")
 public class CreateGroup extends HttpServlet {
@@ -87,6 +90,24 @@ public class CreateGroup extends HttpServlet {
         } catch (NumberFormatException e) {
             path = "/goToHome";
             request.setAttribute("errorMessage", "Errore: parametri non validi");
+            request.getRequestDispatcher(path).forward(request, response);
+            return;
+        }
+
+        UserDAO userDAO = new UserDAO(connection);
+        User user = (User) request.getSession().getAttribute("user");
+        String username = user.getUsername();
+        List<User> users;
+
+        try {
+           users = userDAO.getAllUsers(username);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(min_part -1 > users.size()){
+            path = "/goToHome";
+            request.setAttribute("errorMessage", "Errore: Hai inserito un numero minimo troppo alto");
             request.getRequestDispatcher(path).forward(request, response);
             return;
         }
