@@ -25,11 +25,6 @@ Grade: 27/30
 | DB |  MySQL Workbench
 
 
-## Documentation
-
-[Documentation](https://linktodocumentation)
-
-
 ## Authors
 
 - [@Chaba02](https://www.github.com/Chaba02)
